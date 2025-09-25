@@ -29,17 +29,16 @@ export async function DownloadMultipleTracks(tracks, token, maxConcurrent = 3) {
   const executing = new Set();
   
   for (const track of tracks) {
-    if (executing.size >= maxConcurrent) {
-      await Promise.race(executing);
-    }
-
     const promise = DownloadTrack(track.id, track.title, track.artist, token);
     executing.add(promise);
     
     // Remove from executing set when done
     promise.finally(() => executing.delete(promise));
     results.push(promise);
-    
+
+    if (executing.size >= maxConcurrent) {
+      await Promise.race(executing);
+    }
   }
 
   // Wait for all remaining downloads
