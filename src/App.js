@@ -24,6 +24,28 @@ export async function DownloadTrack(id, title, artist, token) {
     URL.revokeObjectURL(url);
 }
 
+export async function DownloadMultipleTracks(tracks, token, maxConcurrent = 3) {
+  const results = [];
+  const executing = new Set();
+  
+  for (const track of tracks) {
+    if (executing.size >= maxConcurrent) {
+      await Promise.race(executing);
+    }
+
+    const promise = DownloadTrack(track.id, track.title, track.artist, token);
+    executing.add(promise);
+    
+    // Remove from executing set when done
+    promise.finally(() => executing.delete(promise));
+    results.push(promise);
+    
+  }
+
+  // Wait for all remaining downloads
+  return Promise.allSettled(results);
+}
+
 export async function Login(username, password) {
   try {
     const res = await axios.post(SERVER + "login", { username, password });

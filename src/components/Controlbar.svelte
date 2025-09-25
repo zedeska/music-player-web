@@ -1,5 +1,6 @@
  <script>
-  import { onMount } from "svelte";
+    import { onMount } from "svelte";
+    import { push } from "svelte-spa-router";
 
 
     export let currentTrack;
@@ -32,7 +33,7 @@
         <img src="{currentTrack.cover}" alt="{currentTrack.title} cover" class="h-16 w-16 rounded-lg" />
         <div class="flex flex-col">
         <p>{currentTrack.title}</p>
-        <p class="text-sm">{currentTrack.artist || 'Unknown'}</p>
+        <p class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
         </div>
     </div>
     {/if}

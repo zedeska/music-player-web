@@ -24,7 +24,7 @@
 
 <div>
     <button on:click={myMenu.createHandler()}>
-        <i class="fa-solid fa-plus"></i> New playlist
+        <i class="fa-solid fa-plus cursor-pointer"></i> New playlist
     </button>
 </div>
 

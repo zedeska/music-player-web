@@ -1,5 +1,5 @@
 <script>
-  import { DownloadTrack, ValidateAudioSource, GetUsersPlaylists, CreatePlaylist, AddTrackToPlaylist, GetAlbum, DeletePlaylist, DeleteTrackFromPlaylist } from './App.js';
+  import { DownloadTrack, DownloadMultipleTracks, ValidateAudioSource, GetUsersPlaylists, CreatePlaylist, AddTrackToPlaylist, GetAlbum, DeletePlaylist, DeleteTrackFromPlaylist } from './App.js';
   import toast, { Toaster } from 'svelte-french-toast';
 
   import Navbar from './components/Navbar.svelte';
@@ -399,12 +399,6 @@
     );
   }
 
-  async function downloadMultipleTracks(tracks) {
-      for (const track of tracks) {
-        await DownloadTrack(track.id, track.title, track.artist, token, track.album);
-      }
-    }
-
   async function downloadAlbum(tracks, id=0) {
     if (id && id != 0) {
       const album = await fetchAlbum(id);
@@ -413,7 +407,7 @@
       }
     }
     toast.promise(
-      downloadMultipleTracks(tracks),
+      DownloadMultipleTracks(tracks, token),
       {
         loading: `Downloading...`,
         success: `Downloaded successfully!`,

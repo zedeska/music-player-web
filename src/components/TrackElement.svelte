@@ -39,7 +39,7 @@
         {/if}
         <div>
             <h4 class="text-ellipsis whitespace-nowrap" >{track.title}</h4>
-            <button class="text-sm cursor-pointer" on:click={() => {push("/artist/"+track.artist_id)}}>{track.artist || 'Unknown'}</button>
+            <button class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+track.artist_id)}}>{track.artist || 'Unknown'}</button>
         </div> 
     </div>
     <div class="flex gap-2">
