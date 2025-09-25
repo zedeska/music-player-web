@@ -13,6 +13,7 @@
 
   $: items = queue;
   const flipDurationMs = 300;
+  const delayTouchStart = 1500;
     function handleDndConsider(e) {
         items = e.detail.items;
         queue = items;
@@ -26,7 +27,7 @@
 <p class="text-2xl text-center">Queue</p>
 
 {#if queue.length > 0}
-        <div use:dndzone="{{items, flipDurationMs}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
+        <div use:dndzone="{{items, flipDurationMs, delayTouchStart}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
           {#each items as item(item.id) }
             <div animate:flip="{{duration: flipDurationMs}}">
               <TrackElement track={item.track} init={init} active={currentTrack && currentTrack.id === item.track.id} {downloadTrack} {addTrackToPlaylist} {getUsersPlaylists} {addToQueue}  />
