@@ -17,6 +17,7 @@
   import Artist from './routes/Artist.svelte';
   import Playlist from './routes/Playlist.svelte';
   import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
 
   const SERVER = "https://api.yams.tf/";
 
@@ -129,7 +130,7 @@
         queue[randomIndex], queue[currentIndex]];
     }
 
-    let currentTrackIndex = queue.indexOf(currentTrack);
+    let currentTrackIndex = getIndexOfCurrentTrack();
     [queue[0], queue[currentTrackIndex]] = [
       queue[currentTrackIndex], queue[0]];
   }
@@ -171,14 +172,16 @@
   function playAlbum(tracks, id=0, offset=0) {
     if (tracks.length > 0) {
       init(tracks[offset]);
-      queue = tracks; // Add remaining tracks to the queue
-      queue = queue;
+      tracks.forEach((track) => {
+        addToQueue(track);
+      });
     } else if (id && id != 0) {
       fetchAlbum(id).then(albumData => {
         if (albumData) {
           init(albumData.tracks[0]);
-          queue = albumData.tracks;
-          queue = queue; // Add remaining tracks to the queue
+          albumData.tracks.forEach((track) => {
+          addToQueue(track);
+      });
         }
       });
     } else {
@@ -187,12 +190,9 @@
   }
 
   function addMultipleToQueue(tracks) {
-    for (const track of tracks) {
-      if (!queue.includes(track)) {
-        queue.push(track);
-      }
-    }
-    queue = queue; // Trigger reactivity
+    tracks.forEach((track) => {
+      addToQueue(track);
+    });
   }
 
   async function addAlbumToQueue(tracks=[],id=0) {
@@ -224,8 +224,15 @@
   }
 
   function addToQueue(track) {
-    if (!queue.includes(track)) {
-      queue.push(track);
+    let included = false;
+    queue.forEach((value) => {
+      if (track === value.track) {
+        included = true;
+        return;
+      }
+    });
+    if (!included) {
+      queue.push({id: queue.length + 1, track: track});
       queue = queue; // Trigger reactivity
     }
   }
@@ -258,9 +265,9 @@
 
   function playPreviousTrack() {
     if (queue.length > 1) {
-      const previousTrack = queue.indexOf(currentTrack) - 1;
+      const previousTrack = getIndexOfCurrentTrack() - 1;
       if (previousTrack >= 0) {
-        init(queue[previousTrack]);
+        init(queue[previousTrack].track);
       }
     }
   }
@@ -268,16 +275,26 @@
   function playNextTrack() {
     if (queue.length >= 1) {
       if (!currentTrack) {
-        init(queue[0]);
+        init(queue[0].track);
       } else {
-        const nextTrack = queue.indexOf(currentTrack) + 1;
+        const nextTrack = getIndexOfCurrentTrack() + 1;
         if (nextTrack < queue.length) {
-          init(queue[nextTrack]);
+          init(queue[nextTrack].track);
         } else if (nextTrack >= queue.length && loop == 1) {
-          init(queue[0]); // Loop back to the first track
+          init(queue[0].track); // Loop back to the first track
         }
       }
     }
+  }
+
+  function getIndexOfCurrentTrack() {
+    let indexx = 0;
+    queue.forEach((value, index) => {
+      if (value.track === currentTrack) {
+        indexx = index;
+      }
+    });
+    return indexx;
   }
 
   function playAndPause() {
@@ -390,7 +407,7 @@
 
   async function downloadTrack(track) {
     toast.promise(
-      DownloadTrack(track.id, track.title, track.artist, token, ""),
+      DownloadTrack(track.id, track.title, track.artist, token),
       {
         loading: 'Downloading...',
         success: 'Downloaded successfully!',
@@ -480,7 +497,7 @@
       </div>
       
       <div class="col-start-5 overflow-y-scroll h-[calc(100vh-130px)] border-gray-800 border-2 rounded-lg">
-        <RightPanel {queue} {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
+        <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
       </div>
     </div>
 

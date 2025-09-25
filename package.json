@@ -10,7 +10,8 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.1",
-    "svelte-contextmenu": "^1.0.2"
+    "svelte-contextmenu": "^1.0.2",
+    "svelte-dnd-action": "^0.9.65"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.11",
