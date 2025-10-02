@@ -1,5 +1,5 @@
 <script>
-  import { DownloadTrack, DownloadMultipleTracks, ValidateAudioSource, GetUsersPlaylists, CreatePlaylist, AddTrackToPlaylist, GetAlbum, DeletePlaylist, DeleteTrackFromPlaylist } from './App.js';
+  import { DownloadTrack, DownloadMultipleTracks, ValidateAudioSource, GetUsersPlaylists, CreatePlaylist, AddTrackToPlaylist, GetAlbum, DeletePlaylist, DeleteTrackFromPlaylist, GetPlatformNumber } from './App.js';
   import toast, { Toaster } from 'svelte-french-toast';
 
   import Navbar from './components/Navbar.svelte';
@@ -212,14 +212,14 @@
     }
   }
 
-  async function addAlbumToPlaylist(playlistID, tracks=[], id=0) {
+  async function addAlbumToPlaylist(playlistID, tracks=[[]], id=0) {
     // Fetch the album details using the provided ID
     if (id && id != 0) {
       const album = await fetchAlbum(id);
       if (album) {
-        const ids = [];
+        const ids = [[]];
         for (const track of album.tracks) {
-          ids.push(track.id);
+          ids.push([track.id, GetPlatformNumber(track.platform)]);
         }
         await addTrackToPlaylist(playlistID ,ids);
       }
@@ -242,22 +242,9 @@
     }
   }
 
-  function getPlatformNumber(platform) {
-    switch (platform) {
-      case '':
-        return 0;
-      case 'qobuz':
-        return 1;
-      case 'deezer':
-        return 2;
-      default:
-        return -1; // Unknown platform
-    }
-  }
-
   async function init(track) {
     currentAudioTrack.pause();
-    const audioUrl = `${SERVER}play?id=${track.id}&token=${token}&p=${getPlatformNumber(track.platform)}`;
+    const audioUrl = `${SERVER}play?id=${track.id}&token=${token}&p=${GetPlatformNumber(track.platform)}`;
     
     // Show loading state
     isTrackLoading = true;
@@ -425,7 +412,7 @@
 
   async function downloadTrack(track) {
     toast.promise(
-      DownloadTrack(track.id, track.title, track.artist, token),
+      DownloadTrack(track.id, track.title, track.artist, track.platform, token),
       {
         loading: 'Downloading...',
         success: 'Downloaded successfully!',

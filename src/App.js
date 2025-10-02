@@ -91,9 +91,23 @@ export function ValidateFlacFile(file) {
   return errors;
 }
 
-export async function DownloadTrack(id, title, artist, token) {
-    await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}`);
-    const res = await fetch(`${SERVER}play?id=${id}&token=${token}`);
+  export function GetPlatformNumber(platform) {
+    switch (platform) {
+      case '':
+        return 0;
+      case 'qobuz':
+        return 1;
+      case 'deezer':
+        return 2;
+      default:
+        return -1; // Unknown platform
+    }
+  }
+
+export async function DownloadTrack(id, title, artist, platform, token) {
+    let id_platform = GetPlatformNumber(platform);
+    await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}&p=${id_platform}`);
+    const res = await fetch(`${SERVER}play?id=${id}&token=${token}&p=${id_platform}`);
     if (!res.ok) throw new Error("Download failed");
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);

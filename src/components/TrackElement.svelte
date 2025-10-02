@@ -1,6 +1,7 @@
 <script>
     import { push } from "svelte-spa-router";
     import ContextMenu, { Item, Divider } from "svelte-contextmenu";
+    import { GetPlatformNumber } from "../App.js";
     let MyMenu;
 
     let playlists;
@@ -64,7 +65,7 @@
         <Divider />
         <div class="overflow-y-scroll">
             {#each playlists.playlists as playlist}
-                <Item on:click={async () => {addingToPlaylist = false; await addTrackToPlaylist(playlist.id, [track.id])}} class="cursor-pointer">
+                <Item on:click={async () => {addingToPlaylist = false; await addTrackToPlaylist(playlist.id, [[track.id, GetPlatformNumber(track.platform)]])}} class="cursor-pointer">
                     <i class="fa-solid fa-list"></i> {playlist.name}
                 </Item>
             {/each}
