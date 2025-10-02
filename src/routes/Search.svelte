@@ -39,16 +39,24 @@
 {#if resultJSON}
         <h3 class="text-2xl p-2" >Tracks</h3>
         <div class="ml-2">
-          {#each resultJSON.tracks as track}
-            <TrackElement {track} {init} {downloadTrack} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} />
-          {/each}
+          {#if resultJSON.tracks === null}
+            <p class="ml-2">No tracks found.</p>
+          {:else}
+            {#each resultJSON.tracks as track}
+              <TrackElement {track} {init} {downloadTrack} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} />
+            {/each}
+          {/if}
         </div>
 
         <h3 class="text-2xl p-2">Albums</h3>
         <div class="flex-row flex ml-2 flex-wrap">
-          {#each resultJSON.albums as album}
-            <AlbumElement {album} {downloadAlbum} {addAlbumToQueue} {getUsersPlaylists} {addAlbumToPlaylist} {playAlbum} />
-          {/each}
+          {#if resultJSON.albums === null}
+            <p class="ml-2">No albums found.</p>
+          {:else}
+            {#each resultJSON.albums as album}
+              <AlbumElement {album} {downloadAlbum} {addAlbumToQueue} {getUsersPlaylists} {addAlbumToPlaylist} {playAlbum} />
+            {/each}
+          {/if}
         </div>
 
     {/if}

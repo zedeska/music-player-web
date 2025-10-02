@@ -11,6 +11,86 @@ export async function Search(query) {
   return res.data;
 }
 
+export async function UploadTrack(file, token) {
+  // Check if file is provided
+  if (!file) {
+    throw new Error("No file provided");
+  }
+
+  // Check file type
+  if (file.type !== "audio/flac") {
+    throw new Error("Invalid file type. Only FLAC audio files are allowed.");
+  }
+
+  // Optional: Check file extension as additional validation
+  if (!file.name.toLowerCase().endsWith('.flac')) {
+    throw new Error("Invalid file extension. Only .flac files are allowed.");
+  }
+
+  // Create FormData for file upload
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('token', token);
+
+  try {
+    const res = await axios.post(SERVER + "upload", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      // Optional: Track upload progress
+      onUploadProgress: (progressEvent) => {
+        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        console.log(`Upload Progress: ${percentCompleted}%`);
+      }
+    });
+
+    if (res.status !== 200) {
+      throw new Error("Upload failed");
+    }
+
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+      // Server responded with error status
+      throw new Error(`Upload failed: ${error.response.data.message || error.response.statusText}`);
+    } else if (error.request) {
+      // Request was made but no response received
+      throw new Error("Upload failed: No response from server");
+    } else {
+      // Something else happened
+      throw new Error(`Upload failed: ${error.message}`);
+    }
+  }
+}
+
+// Helper function to validate file before upload (can be used in UI)
+export function ValidateFlacFile(file) {
+  const errors = [];
+
+  if (!file) {
+    errors.push("No file selected");
+    return errors;
+  }
+
+  // Check MIME type
+  if (file.type !== "audio/x-flac" && file.type !== "audio/flac") {
+    errors.push("Invalid file type. Only FLAC audio files are allowed.");
+  }
+
+  // Check file extension
+  if (!file.name.toLowerCase().endsWith('.flac')) {
+    errors.push("Invalid file extension. Only .flac files are allowed.");
+  }
+
+  // Check file size (optional - adjust limit as needed)
+  const maxSize = 200 * 1024 * 1024; // 200MB
+  if (file.size > maxSize) {
+    errors.push(`File size too large. Maximum size is ${maxSize / (1024 * 1024)}MB.`);
+  }
+
+  return errors;
+}
+
 export async function DownloadTrack(id, title, artist, token) {
     await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}`);
     const res = await fetch(`${SERVER}play?id=${id}&token=${token}`);

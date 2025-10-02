@@ -16,6 +16,7 @@
   import Home from './routes/Home.svelte';
   import Artist from './routes/Artist.svelte';
   import Playlist from './routes/Playlist.svelte';
+  import Profile from './routes/Profile.svelte';
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
 
@@ -98,6 +99,10 @@
         deletePlaylist,
         deleteTrackFromPlaylist
       }
+    }),
+    "/profile": wrap({
+      component: Profile,
+      props: { userToken: token }
     })
   };
 
@@ -237,9 +242,22 @@
     }
   }
 
+  function getPlatformNumber(platform) {
+    switch (platform) {
+      case '':
+        return 0;
+      case 'qobuz':
+        return 1;
+      case 'deezer':
+        return 2;
+      default:
+        return -1; // Unknown platform
+    }
+  }
+
   async function init(track) {
     currentAudioTrack.pause();
-    const audioUrl = `${SERVER}play?id=${track.id}&token=${token}`;
+    const audioUrl = `${SERVER}play?id=${track.id}&token=${token}&p=${getPlatformNumber(track.platform)}`;
     
     // Show loading state
     isTrackLoading = true;
