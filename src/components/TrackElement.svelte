@@ -28,7 +28,7 @@
   }}>
     <div class="flex items-center gap-2 flex-row">
         {#if numbered}
-            <button class="relative cursor-pointer" on:click={() => {playAlbum(tracksData, 0, tracksData.indexOf(track))}}>
+            <button class="relative cursor-pointer" on:click={() => {playAlbum(tracksData, 0, 0, tracksData.indexOf(track))}}>
                 <img class="min-h-[40px] min-w-[40px] max-h-[40px] max-w-[40px] relative rounded-lg" src="{track.cover || ''}" alt="">
                 <i class="fa-solid fa-play group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
             </button>
