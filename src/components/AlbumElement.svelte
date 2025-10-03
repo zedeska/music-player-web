@@ -1,7 +1,7 @@
 <script>
     import { push } from "svelte-spa-router";
     import ContextMenu, { Item, Divider } from "svelte-contextmenu";
-    import { GetPlatformNumber } from "src/App";
+    import { GetPlatformNumber } from "../App.js";
     let MyMenu;
 
     let playlists;

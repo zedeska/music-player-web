@@ -181,8 +181,8 @@ export async function ValidateAudioSource(url) {
   }
 }
 
-export async function GetAlbum(id, platform) {
-  return _get("album", { id, platform });
+export async function GetAlbum(id, p) {
+  return _get("album", { id, p });
 }
 
 export async function GetListened(token) {
