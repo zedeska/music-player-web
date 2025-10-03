@@ -1,6 +1,7 @@
 <script>
     import { push } from "svelte-spa-router";
     import ContextMenu, { Item, Divider } from "svelte-contextmenu";
+    import { GetPlatformNumber } from "src/App";
     let MyMenu;
 
     let playlists;
@@ -18,7 +19,7 @@
 <div class="group ease-in-out transition flex flex-col align-middle items-center rounded-lg p-2 hover:bg-violet-950 gap-2" on:contextmenu={(e) => {
     MyMenu.show(e);
   }}>
-    <button class="relative cursor-pointer" on:click={() => {push("/album/"+album.id)}}>
+    <button class="relative cursor-pointer" on:click={() => {push("/album/"+GetPlatformNumber(album.platform)+"/"+album.id)}}>
         <img class="max-h-[100px] max-w-[100px] relative rounded-lg" src="{album.cover || ''}" alt="">
         <i class="fa-solid fa-play group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
     </button>
@@ -30,9 +31,9 @@
 
 <ContextMenu bind:this={MyMenu}>
     {#if !addingToPlaylist}
-        <Item on:click={() => {playAlbum([], album.id)}}>Play</Item>
-        <Item on:click={() => {downloadAlbum([], album.id)}}>Download</Item>
-        <Item on:click={() => {addAlbumToQueue([], album.id)}}>Add to Queue</Item>
+        <Item on:click={() => {playAlbum([], album.id, GetPlatformNumber(album.platform))}}>Play</Item>
+        <Item on:click={() => {downloadAlbum([], album.id, GetPlatformNumber(album.platform))}}>Download</Item>
+        <Item on:click={() => {addAlbumToQueue([], album.id, GetPlatformNumber(album.platform))}}>Add to Queue</Item>
         <Item autoclose={false} on:click={async () => {
             playlists = await getUsersPlaylists();
             addingToPlaylist = true;
@@ -44,7 +45,7 @@
             {#each playlists.playlists as playlist}
                 <Item on:click={async () => {
                     addingToPlaylist = false;
-                    await addAlbumToPlaylist(playlist.id, [], album.id);
+                    await addAlbumToPlaylist(playlist.id, [], album.id, GetPlatformNumber(album.platform));
                     }} class="cursor-pointer">
                     <i class="fa-solid fa-list"></i> {playlist.name}
                 </Item>

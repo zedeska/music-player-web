@@ -16,7 +16,7 @@
 
     onMount(async () => {
       if (params.id) {
-        albumData = await fetchAlbum(params.id);
+        albumData = await fetchAlbum(params.id, params.platform);
       }
     });
 </script>

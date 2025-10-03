@@ -62,7 +62,7 @@
         downloadAlbum
       }
     }),
-    "/album/:id" : wrap({
+    "/album/:platform/:id" : wrap({
       component: Album,
       props: { 
         downloadTrack,
@@ -159,13 +159,13 @@
     }
   }
 
-  async function fetchAlbum(id) {
+  async function fetchAlbum(id, platform) {
     if (!id || id === 0) {
         toast.error("Album ID is not provided.");
         return;
     }
     try {
-        const result = await GetAlbum(id);
+        const result = await GetAlbum(id, platform);
         const albumData = result;
         return albumData;
     } catch (error) {
@@ -174,14 +174,14 @@
     }
 }
 
-  function playAlbum(tracks, id=0, offset=0) {
+  function playAlbum(tracks, id=0, platform=0, offset=0) {
     if (tracks.length > 0) {
       init(tracks[offset]);
       tracks.forEach((track) => {
         addToQueue(track);
       });
-    } else if (id && id != 0) {
-      fetchAlbum(id).then(albumData => {
+    } else if (id && id != 0 && platform && platform != 0) {
+      fetchAlbum(id, platform).then(albumData => {
         if (albumData) {
           init(albumData.tracks[0]);
           albumData.tracks.forEach((track) => {
@@ -200,10 +200,10 @@
     });
   }
 
-  async function addAlbumToQueue(tracks=[],id=0) {
+  async function addAlbumToQueue(tracks=[],id=0, platform=0) {
     // Fetch the album details using the provided ID
-    if (id && id != 0) {
-      const album = await fetchAlbum(id);
+    if (id && id != 0 && platform && platform != 0) {
+      const album = await fetchAlbum(id, platform);
       if (album) {
         addMultipleToQueue(album.tracks);
       }
@@ -212,10 +212,10 @@
     }
   }
 
-  async function addAlbumToPlaylist(playlistID, tracks=[[]], id=0) {
+  async function addAlbumToPlaylist(playlistID, tracks=[[]], id=0, platform=0) {
     // Fetch the album details using the provided ID
     if (id && id != 0) {
-      const album = await fetchAlbum(id);
+      const album = await fetchAlbum(id, platform);
       if (album) {
         const ids = [];
         for (const track of album.tracks) {
