@@ -217,9 +217,9 @@
     if (id && id != 0) {
       const album = await fetchAlbum(id);
       if (album) {
-        const ids = [[]];
+        const ids = [];
         for (const track of album.tracks) {
-          ids.push([track.id, GetPlatformNumber(track.platform)]);
+          ids.push({id: track.id, platform: GetPlatformNumber(track.platform)});
         }
         await addTrackToPlaylist(playlistID ,ids);
       }

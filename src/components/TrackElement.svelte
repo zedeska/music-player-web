@@ -65,7 +65,7 @@
         <Divider />
         <div class="overflow-y-scroll">
             {#each playlists.playlists as playlist}
-                <Item on:click={async () => {addingToPlaylist = false; await addTrackToPlaylist(playlist.id, [[track.id, GetPlatformNumber(track.platform)]])}} class="cursor-pointer">
+                <Item on:click={async () => {addingToPlaylist = false; await addTrackToPlaylist(playlist.id, [{id: track.id, platform: GetPlatformNumber(track.platform)}])}} class="cursor-pointer">
                     <i class="fa-solid fa-list"></i> {playlist.name}
                 </Item>
             {/each}
