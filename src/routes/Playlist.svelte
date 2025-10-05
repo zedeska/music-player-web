@@ -52,7 +52,7 @@
                         }}>
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
-                        <button class="cursor-pointer" on:click={() => {downloadAlbum(playlistData.tracks)}}>
+                        <button class="cursor-pointer" on:click={() => {downloadAlbum(playlistData.tracks, 0)}}>
                             <i class="fa-solid fa-download"></i>
                         </button>
                     </div>

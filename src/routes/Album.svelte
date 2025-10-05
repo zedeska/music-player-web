@@ -30,7 +30,7 @@
             <h2 class="text-7xl font-bold row-start-2 overflow-hidden text-ellipsis whitespace-nowrap" >{albumData.title}</h2>
             <div class="row-start-3 grid grid-cols-3">
                 <p class="self-end cursor-pointer" ><button on:click={() => push(`/artist/${albumData.artist_id}`)}>{albumData.artist}</button> • {new Date(albumData.year * 1000).getFullYear()} • {albumData.track_count} Tracks
-                    <button class="cursor-pointer self-end" on:click={() => {downloadAlbum(albumData.tracks)}}>
+                    <button class="cursor-pointer self-end" on:click={() => {downloadAlbum(albumData.tracks, albumData.platform)}}>
                     <i class="fa-solid fa-download"></i>
                   </button>
                 </p>

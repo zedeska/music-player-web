@@ -31,9 +31,9 @@
 
 <ContextMenu bind:this={MyMenu}>
     {#if !addingToPlaylist}
-        <Item on:click={() => {playAlbum([], album.id, GetPlatformNumber(album.platform))}}>Play</Item>
-        <Item on:click={() => {downloadAlbum([], album.id, GetPlatformNumber(album.platform))}}>Download</Item>
-        <Item on:click={() => {addAlbumToQueue([], album.id, GetPlatformNumber(album.platform))}}>Add to Queue</Item>
+        <Item on:click={() => {playAlbum([], GetPlatformNumber(album.platform), album.id)}}>Play</Item>
+        <Item on:click={() => {downloadAlbum([], GetPlatformNumber(album.platform), album.id)}}>Download</Item>
+        <Item on:click={() => {addAlbumToQueue([], GetPlatformNumber(album.platform), album.id)}}>Add to Queue</Item>
         <Item autoclose={false} on:click={async () => {
             playlists = await getUsersPlaylists();
             addingToPlaylist = true;

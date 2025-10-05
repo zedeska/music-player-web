@@ -105,9 +105,8 @@ export function ValidateFlacFile(file) {
   }
 
 export async function DownloadTrack(id, title, artist, platform, token) {
-    let id_platform = GetPlatformNumber(platform);
-    await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}&p=${id_platform}`);
-    const res = await fetch(`${SERVER}play?id=${id}&token=${token}&p=${id_platform}`);
+    await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
+    const res = await fetch(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
     if (!res.ok) throw new Error("Download failed");
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
@@ -118,12 +117,12 @@ export async function DownloadTrack(id, title, artist, platform, token) {
     URL.revokeObjectURL(url);
 }
 
-export async function DownloadMultipleTracks(tracks, token, maxConcurrent = 3) {
+export async function DownloadMultipleTracks(tracks, token, platform, maxConcurrent = 3) {
   const results = [];
   const executing = new Set();
   
   for (const track of tracks) {
-    const promise = DownloadTrack(track.id, track.title, track.artist, token);
+    const promise = DownloadTrack(track.id, track.title, track.artist, platform, token);
     executing.add(promise);
     
     // Remove from executing set when done

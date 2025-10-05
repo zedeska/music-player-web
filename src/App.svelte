@@ -18,7 +18,6 @@
   import Playlist from './routes/Playlist.svelte';
   import Profile from './routes/Profile.svelte';
   import { onMount } from 'svelte';
-  import { get } from 'svelte/store';
 
   const SERVER = "https://api.yams.tf/";
 
@@ -412,7 +411,7 @@
 
   async function downloadTrack(track) {
     toast.promise(
-      DownloadTrack(track.id, track.title, track.artist, track.platform, token),
+      DownloadTrack(track.id, track.title, track.artist, GetPlatformNumber(track.platform), token),
       {
         loading: 'Downloading...',
         success: 'Downloaded successfully!',
@@ -421,15 +420,15 @@
     );
   }
 
-  async function downloadAlbum(tracks, id=0) {
+  async function downloadAlbum(tracks, platform, id=0) {
     if (id && id != 0) {
-      const album = await fetchAlbum(id);
+      const album = await fetchAlbum(id, platform);
       if (album) {
         tracks = album.tracks;
       }
     }
     toast.promise(
-      DownloadMultipleTracks(tracks, token),
+      DownloadMultipleTracks(tracks, token, platform),
       {
         loading: `Downloading...`,
         success: `Downloaded successfully!`,
