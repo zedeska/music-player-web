@@ -1,4 +1,4 @@
- <script>
+<script>
     import { onMount } from "svelte";
     import { push } from "svelte-spa-router";
 
@@ -37,7 +37,7 @@
     });
  </script>
  
- <aside class="music-control absolute md:hidden h-full w-full bg-black z-100" class:open>
+ <aside class="music-control player-overlay absolute md:hidden h-full w-full bg-black z-100" class:open={open}>
     <div class="w-full h-full flex flex-col items-center p-5 gap-2">
       <div class="justify-start w-full">
         <button class="cursor-pointer justify-start text-lg mb-3 ml-2" on:click={() => {open = !open}}><i class="fa-regular fa-square-caret-down"></i></button>
@@ -86,17 +86,16 @@
 </aside>
 
 <style>
+  /* player overlay: keep its own open/closed rules so other .open classes don't interfere */
+  .player-overlay {
+    transition: bottom 0.4s ease-in-out;
+    bottom: -100%;
+  }
+  .player-overlay.open {
+    bottom: 0;
+  }
 
-    aside {
-		transition: bottom 0.4s ease-in-out;
-        bottom: -100%;
-	}
-	
-	.open {
-		bottom: 0;
-	}
-
-  /* Progress bar styling */
+    /* Progress bar styling */
   .progress-bar {
     -webkit-appearance: none;
     appearance: none;

@@ -37,7 +37,7 @@
     });
  </script>
  
- <div class="music-control relative fixed bottom-0 left-0 w-full bg-black grid grid-cols-6 items-center p-1 min-h-[72px]" on:click={() => {
+ <div class="music-control w-full bg-black grid grid-cols-6 items-center p-1 min-h-[72px]" on:click={() => {
     if (innerWidth < 768) {
         open = true;
     }

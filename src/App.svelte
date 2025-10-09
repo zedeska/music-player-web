@@ -483,6 +483,13 @@
     if (localStorage.getItem('token')) {
       token = localStorage.getItem('token');
     }
+
+    // ensure overlays are closed on fresh load (works around cached DOM / SW hydration)
+    overlay = false;
+    queueOverlay = false;
+
+    // defensive: remove any stray .open classes left in cached HTML
+    document.querySelectorAll('.queue-overlay.open, .player-overlay.open').forEach(el => el.classList.remove('open'));
   });
 </script>
 
@@ -496,9 +503,9 @@
 
   {:else}
 
-  <div>
-    <aside class="absolute h-full w-full z-150 bg-black p-2" class:open={queueOverlay} >
-      <button class="text-xl cursor-pointer" on:click={() => {queueOverlay = false}}><i class="fa-solid fa-xmark"></i></button>
+  <div class="h-screen w-full flex flex-col">
+    <aside class="queue-overlay absolute h-full w-full z-150 bg-black p-2" class:open={queueOverlay} >
+      <button class="text-xl cursor-pointer" on:click={() => {queueOverlay = false;}}><i class="fa-solid fa-xmark"></i></button>
       <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
     </aside>
 
@@ -506,13 +513,13 @@
     <Sidebar {getUsersPlaylists} {createPlaylist} {usersPlaylists} bind:open={sidebar} />
     <Navbar {logout} bind:sidebar />
 
-    <div class="overflow-y-hidden p-2 grid-cols-5 grid gap-2">
+    <div class="overflow-y-hidden h-full w-full p-2 grid-cols-5 grid gap-2">
       
-      <div class="hidden md:block col-start-1 h-[calc(100vh-130px)] border-gray-800 border-2 rounded-lg">
+      <div class="hidden md:block col-start-1 h-full border-gray-800 border-2 rounded-lg">
         <LeftPanel {getUsersPlaylists} {createPlaylist} {usersPlaylists} />
       </div>
 
-      <div class="col-start-1 col-span-5 md:col-start-2 md:col-span-3 overflow-y-scroll h-[calc(100vh-130px)] border-gray-800 border-2 rounded-lg">
+      <div class="col-start-1 col-span-5 md:col-start-2 md:col-span-3 overflow-y-scroll h-full border-gray-800 border-2 rounded-lg">
         <Router {routes} />
       </div>
       
@@ -533,12 +540,12 @@
 </main>
 
 <style>
-  aside {
-		transition: bottom 0.4s ease-in-out;
-        bottom: -100%;
-	}
-	
-	.open {
-		bottom: 0;
-	}
+  /* queue overlay: hidden by default, slides up when .open is added */
+  .queue-overlay {
+    transition: bottom 0.4s ease-in-out;
+    bottom: -100%;
+  }
+  .queue-overlay.open {
+    bottom: 0;
+  }
 </style>
