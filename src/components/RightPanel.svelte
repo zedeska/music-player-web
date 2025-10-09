@@ -13,7 +13,7 @@
 
   $: items = queue;
   const flipDurationMs = 300;
-  const delayTouchStart = 1500;
+  const delayTouchStart = 1000;
     function handleDndConsider(e) {
         items = e.detail.items;
         queue = items;
@@ -24,7 +24,7 @@
     }
 </script>
 
-<p class="text-2xl text-center">Queue</p>
+<p class="text-2xl text-center mb-2">Queue</p>
 
 {#if queue.length > 0}
         <div use:dndzone="{{items, flipDurationMs, delayTouchStart}}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">

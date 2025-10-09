@@ -20,35 +20,50 @@
     export let shuffle;
     export let changeLoop;
     export let loop;
+    export let open = false;
+    export let paused = true;
+    export let innerWidth;
+
+    let playIcon = "";
+
+    $: if (paused) {
+      playIcon = 'fa-play';
+    } else {
+      playIcon = 'fa-pause';
+    }
 
     onMount(() => {
         updateVolume();
     });
  </script>
  
- <div class="music-control fixed bottom-0 left-0 w-full bg-black grid grid-cols-6 items-center p-2 min-h-[72px]">
+ <div class="music-control relative fixed bottom-0 left-0 w-full bg-black grid grid-cols-6 items-center p-1 min-h-[72px]" on:click={() => {
+    if (innerWidth < 768) {
+        open = true;
+    }
+    }}>
 
     {#if currentTrack}
-    <div class="flex flex-row items-center col-start-1 gap-2 justify-self-start">
+    <div class="flex flex-row items-center md:col-span-1 col-span-3 col-start-1 gap-2 justify-self-start">
         <img src="{currentTrack.cover}" alt="{currentTrack.title} cover" class="h-16 w-16 rounded-lg" />
         <div class="flex flex-col">
-        <p>{currentTrack.title}</p>
-        <p class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
+        <p class="text-sm font-semibold md:text-base">{currentTrack.title}</p>
+        <p class="md:text-sm text-xs cursor-pointer hover:underline" on:click={() => {push("/artist/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
         </div>
     </div>
     {/if}
 
-    <div class="items-center flex flex-col w-1/2 col-span-4 col-start-2 justify-self-center">
+    <div class="items-center flex flex-col w-1/2 md:col-span-4 md:col-start-2 col-start-6 md:justify-self-center">
       <div class="flex items-center gap-4 justify-center">
-        <button on:click={shuffle} ><i class="fa-solid fa-shuffle"></i></button>
-        <button on:click={playPreviousTrack} ><i class="cursor-pointer fa-solid fa-backward"></i></button>
-        <button disabled={isTrackLoading} on:click={playAndPause} class="text-white hover:text-gray-300 cursor-pointer">
-        <i id="btnPlay" class="fa-solid fa-play"></i>
+        <button class="hidden md:block" on:click={shuffle} ><i class="fa-solid fa-shuffle"></i></button>
+        <button on:click|stopPropagation={playPreviousTrack} ><i class="cursor-pointer fa-solid fa-backward"></i></button>
+        <button disabled={isTrackLoading} on:click|stopPropagation={playAndPause} class="text-white hover:text-gray-300 cursor-pointer">
+        <i class={`fa-solid ${playIcon}`}></i>
         </button>
-        <button on:click={playNextTrack}><i class="cursor-pointer fa-solid fa-forward"></i></button>
-        <button on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
+        <button on:click|stopPropagation={playNextTrack}><i class="cursor-pointer fa-solid fa-forward"></i></button>
+        <button class="hidden md:block" on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
       </div>
-      <div class="flex flex-row items-center w-full gap-2">
+      <div class="md:flex hidden flex-row items-center w-full gap-2">
         <span>{formatTime(currentTime)}</span>
         <div class="w-full mb-2">
         <input type="range" min="0" max="{duration}" bind:value={currentTime} on:input={updateCurrentTime} on:mousedown={() => currentAudioTrack.pause()} on:mouseup={() => currentAudioTrack.play()} class="w-full h-1 bg-[#4b5563] rounded-lg cursor-pointer progress-bar" />
@@ -59,7 +74,7 @@
 
     
     <!-- Volume Control -->
-    <div class="flex items-center gap-2 col-start-6 justify-self-end">
+    <div class="hidden md:flex items-center gap-2 col-start-6 justify-self-end">
         <i class="fa-solid {muted ? 'fa-volume-xmark' : 'fa-volume-high'} text-white text-sm cursor-pointer" on:click={muteUnmute}></i>
         <input 
         type="range" 

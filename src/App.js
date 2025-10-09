@@ -105,7 +105,7 @@ export function ValidateFlacFile(file) {
   }
 
 export async function DownloadTrack(id, title, artist, platform, token) {
-    await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
+    //await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
     const res = await fetch(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
     if (!res.ok) throw new Error("Download failed");
     const blob = await res.blob();
@@ -132,6 +132,7 @@ export async function DownloadMultipleTracks(tracks, token, platform, maxConcurr
     if (executing.size >= maxConcurrent) {
       await Promise.race(executing);
     }
+    setTimeout(() => {}, 500); // Slight delay to avoid overwhelming the browser
   }
 
   // Wait for all remaining downloads

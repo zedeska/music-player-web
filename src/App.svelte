@@ -7,6 +7,8 @@
   import RightPanel from './components/RightPanel.svelte';
   import LeftPanel from './components/LeftPanel.svelte';
   import LoginRegisterForm from './components/LoginRegisterForm.svelte';
+  import Sidebar from './components/Sidebar.svelte';
+  import PlayerOverlay from './components/PlayerOverlay.svelte';
 
   import Router from 'svelte-spa-router';
   import {wrap} from 'svelte-spa-router/wrap';
@@ -30,8 +32,13 @@
   let duration = 0;
   let isDragging = false;
   let muted = false;
+  let paused = true;
   let usersPlaylists = null;
   let loop = 0;
+  let sidebar = false;
+  let overlay = false;
+  let queueOverlay = false;
+  let innerWidth = 1920;
 
   let queue = [];
 
@@ -242,19 +249,17 @@
   }
 
   async function init(track) {
-    currentAudioTrack.pause();
+    currentAudioTrack.remove();
     const audioUrl = `${SERVER}play?id=${track.id}&token=${token}&p=${GetPlatformNumber(track.platform)}`;
     
     // Show loading state
     isTrackLoading = true;
-    document.getElementById('btnPlay').className = "fa-solid fa-spinner fa-spin-pulse";
-    
+
     try {
        // Validate audio source
       await ValidateAudioSource(audioUrl);
     } catch (error) {
       toast.error(error);
-      document.getElementById('btnPlay').className = "fa-solid fa-play";
       isTrackLoading = false;
       return;
     }
@@ -309,21 +314,19 @@
     }
   }
 
-  currentAudioTrack.onpause = () => {
-    document.getElementById('btnPlay').className = "fa-solid fa-play";
-  };
-
   currentAudioTrack.onloadstart = () => {
     // Optional: Handle audio load event if needed
     isTrackLoading = true;
-    document.getElementById('btnPlay').className = "fa-solid fa-spinner fa-spin-pulse";
   };
 
   currentAudioTrack.onplaying = () => {
     if (isTrackLoading) {
       isTrackLoading = false;
     }
-    document.getElementById('btnPlay').className = "fa-solid fa-pause";
+    paused = false;
+  };
+  currentAudioTrack.onpause = () => {
+    paused = true;
   };
 
   currentAudioTrack.ontimeupdate = () => {
@@ -344,7 +347,6 @@
   };
 
   currentAudioTrack.onended = () => {
-    document.getElementById('btnPlay').className = "fa-solid fa-play";
     currentTime = 0;
     const progressBar = document.querySelector('.progress-bar');
     progressBar.style.setProperty('--progress-percent', `${currentTime}%`);
@@ -468,6 +470,11 @@
     }
   }
 
+  $: if (innerWidth <= 768) {
+    volume = 100;
+    updateVolume();
+  }
+
   // Set initial volume
   onMount(async () => {
     if (localStorage.getItem('volume')) {
@@ -479,6 +486,8 @@
   });
 </script>
 
+<svelte:window bind:innerWidth />
+
 <main>
   <Toaster />
   {#if !token}
@@ -488,24 +497,33 @@
   {:else}
 
   <div>
-    <Navbar {logout}/>
+    <aside class="absolute h-full w-full z-150 bg-black p-2" class:open={queueOverlay} >
+      <button class="text-xl cursor-pointer" on:click={() => {queueOverlay = false}}><i class="fa-solid fa-xmark"></i></button>
+      <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
+    </aside>
+
+    <PlayerOverlay {paused} bind:open={overlay} bind:openQueue={queueOverlay} {loop} {changeLoop} {shuffle} {currentTrack} {currentAudioTrack} {formatTime} bind:currentTime {duration} bind:volume bind:muted bind:isTrackLoading {playPreviousTrack} {playAndPause} {playNextTrack} {updateCurrentTime} {updateVolume} {muteUnmute} />
+    <Sidebar {getUsersPlaylists} {createPlaylist} {usersPlaylists} bind:open={sidebar} />
+    <Navbar {logout} bind:sidebar />
 
     <div class="overflow-y-hidden p-2 grid-cols-5 grid gap-2">
       
-      <div class="col-start-1 h-[calc(100vh-130px)] border-gray-800 border-2 rounded-lg">
+      <div class="hidden md:block col-start-1 h-[calc(100vh-130px)] border-gray-800 border-2 rounded-lg">
         <LeftPanel {getUsersPlaylists} {createPlaylist} {usersPlaylists} />
       </div>
-      
-      <div class="col-start-2 col-span-3 overflow-y-scroll h-[calc(100vh-130px)] border-gray-800 border-2 rounded-lg">
+
+      <div class="col-start-1 col-span-5 md:col-start-2 md:col-span-3 overflow-y-scroll h-[calc(100vh-130px)] border-gray-800 border-2 rounded-lg">
         <Router {routes} />
       </div>
       
-      <div class="col-start-5 overflow-y-scroll h-[calc(100vh-130px)] border-gray-800 border-2 rounded-lg">
+      <div class="hidden md:block col-start-5 overflow-y-scroll h-full border-gray-800 border-2 rounded-lg">
         <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
       </div>
     </div>
 
-    <Controlbar {loop} {changeLoop} {shuffle} {currentTrack} {currentAudioTrack} {formatTime} bind:currentTime {duration} bind:volume bind:muted bind:isTrackLoading {playPreviousTrack} {playAndPause} {playNextTrack} {updateCurrentTime} {updateVolume} {muteUnmute} />
+    {#if currentTrack}
+      <Controlbar {paused} {innerWidth} bind:open={overlay} {loop} {changeLoop} {shuffle} {currentTrack} {currentAudioTrack} {formatTime} bind:currentTime {duration} bind:volume bind:muted bind:isTrackLoading {playPreviousTrack} {playAndPause} {playNextTrack} {updateCurrentTime} {updateVolume} {muteUnmute} />
+    {/if}
 
   </div>
 
@@ -514,3 +532,13 @@
   {/if}
 </main>
 
+<style>
+  aside {
+		transition: bottom 0.4s ease-in-out;
+        bottom: -100%;
+	}
+	
+	.open {
+		bottom: 0;
+	}
+</style>
