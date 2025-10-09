@@ -32,9 +32,6 @@
       playIcon = 'fa-pause';
     }
 
-    // expose percent so the CSS gradient shows the filled track
-    $: percent = (duration && duration > 0) ? Math.max(0, Math.min(100, Math.round((currentTime / duration) * 100))) : 0;
-
     onMount(() => {
         updateVolume();
     });
@@ -69,18 +66,7 @@
       <div class="md:flex hidden flex-row items-center w-full gap-2">
         <span>{formatTime(currentTime)}</span>
         <div class="w-full mb-2">
-        <!-- removed bg utility and set --progress-percent so gradient shows -->
-        <input
-          type="range"
-          min="0"
-          max="{duration}"
-          bind:value={currentTime}
-          on:input={updateCurrentTime}
-          on:mousedown={() => currentAudioTrack.pause()}
-          on:mouseup={() => currentAudioTrack.play()}
-          class="w-full h-1 rounded-lg cursor-pointer progress-bar"
-          style="--progress-percent: {percent}%"
-        />
+        <input type="range" min="0" max="{duration}" bind:value={currentTime} on:input={updateCurrentTime} on:mousedown={() => currentAudioTrack.pause()} on:mouseup={() => currentAudioTrack.play()} class="w-full h-1 bg-[#4b5563] rounded-lg cursor-pointer progress-bar" />
         </div>
         <span>{formatTime(duration)}</span>
       </div>

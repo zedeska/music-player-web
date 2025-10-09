@@ -334,10 +334,12 @@
       currentTime = currentAudioTrack.currentTime;
       
       // Update progress bar fill
-      const progressBar = document.querySelector('.progress-bar');
+      const progressBar = document.getElementsByClassName('progress-bar');
       if (progressBar && duration > 0) {
         const percent = (currentTime / duration) * 100;
-        progressBar.style.setProperty('--progress-percent', `${percent}%`);
+        for (let elt of progressBar) {
+          elt.style.setProperty('--progress-percent', `${percent}%`);
+        }
       }
     }
   };
@@ -348,8 +350,10 @@
 
   currentAudioTrack.onended = () => {
     currentTime = 0;
-    const progressBar = document.querySelector('.progress-bar');
-    progressBar.style.setProperty('--progress-percent', `${currentTime}%`);
+    const progressBar = document.getElementsByClassName('progress-bar');
+    for (let elt of progressBar) {
+        elt.style.setProperty('--progress-percent', `${currentTime}%`);
+      }
     if (loop == 2) {
       currentAudioTrack.currentTime = 0;
       currentAudioTrack.play(); // Restart the current track
@@ -375,10 +379,12 @@
     currentAudioTrack.currentTime = currentTime;
     
     // Update CSS custom property for progress bar fill
-    const progressBar = document.querySelector('.progress-bar');
+    const progressBar = document.getElementsByClassName('progress-bar');
     if (progressBar && duration > 0) {
       const percent = (currentTime / duration) * 100;
-      progressBar.style.setProperty('--progress-percent', `${percent}%`);
+      for (let elt of progressBar) {
+        elt.style.setProperty('--progress-percent', `${percent}%`);
+      }
     }
   }
 
