@@ -23,10 +23,10 @@
     export let numbered = false;
 </script>
 
-<div class="group ease-in-out transition flex flex-row align-middle items-center rounded-lg p-2 gap-2 justify-between" class:bg-violet-950={active} class:hover:bg-violet-950={!active} on:contextmenu={(e) => {
+<div class="group ease-in-out transition flex flex-row align-middle items-center rounded-lg p-2 gap-2 justify-between max-w-full" class:bg-violet-950={active} class:hover:bg-violet-950={!active} on:contextmenu={(e) => {
     MyMenu.show(e);
   }}>
-    <div class="flex items-center gap-2 flex-row">
+    <div class="flex items-center gap-2 flex-row truncate">
         {#if numbered}
             <button class="relative cursor-pointer" on:click={() => {playAlbum(tracksData, 0, 0, tracksData.indexOf(track))}}>
                 <img class="min-h-[40px] min-w-[40px] max-h-[40px] max-w-[40px] relative rounded-lg" src="{track.cover || ''}" alt="">
@@ -38,8 +38,8 @@
                 <i class="fa-solid fa-play group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
             </button>
         {/if}
-        <div>
-            <h4 class="text-ellipsis whitespace-nowrap" >{track.title}</h4>
+        <div class="">
+            <h4 class="" >{track.title}</h4>
             <button class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+track.artist_id)}}>{track.artist || 'Unknown'}</button>
         </div> 
     </div>

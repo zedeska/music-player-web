@@ -46,9 +46,9 @@
     {#if currentTrack}
     <div class="flex flex-row items-center md:col-span-1 col-span-3 col-start-1 gap-2 justify-self-start">
         <img src="{currentTrack.cover}" alt="{currentTrack.title} cover" class="h-16 w-16 rounded-lg" />
-        <div class="flex flex-col">
+        <div class="w-full overflow-hidden flex flex-col">
         <p class="text-sm font-semibold md:text-base truncate">{currentTrack.title}</p>
-        <p class="md:text-sm text-xs cursor-pointer hover:underline" on:click|stopPropagation={() => {push("/artist/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
+        <p class="md:text-sm text-xs cursor-pointer hover:underline w-fit" on:click|stopPropagation={() => {push("/artist/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
         </div>
     </div>
     {/if}
