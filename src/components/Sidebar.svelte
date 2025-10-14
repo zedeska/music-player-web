@@ -23,7 +23,7 @@
 <aside class="absolute md:hidden h-full w-full bg-black/50 z-50" class:open on:click={() => {
         open = false;
 }}>
-<div class="h-full px-3 bg-black border-2 border-gray-800 w-1/3 bar" class:open>
+<div class="h-full px-3 bg-black border-2 border-gray-800 w-2/5 bar" class:open>
 <p class="text-2xl text-center" >Library</p>
 
 <div>
@@ -32,7 +32,7 @@
     </button>
     {#if makingPlaylist}
     <div>
-        <input type="text" on:click|stopPropagation on:input|stopPropagation bind:value={newPlaylistName} placeholder="Playlist name" />
+        <input class="max-w-full" type="text" on:click|stopPropagation on:input|stopPropagation bind:value={newPlaylistName} placeholder="Playlist name" />
         <button on:click|stopPropagation={async () => {
             await createPlaylist(newPlaylistName);
             usersPlaylists = await getUsersPlaylists();
