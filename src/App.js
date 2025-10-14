@@ -1,8 +1,11 @@
 // app.js
 import axios from "axios";
+import { metaflac, preloadWorkerAndWASM } from 'metaflac.wasm/worker';
 
 const SERVER = "https://api.yams.tf/";
 const VERSION = "v1.0.0";
+
+preloadWorkerAndWASM();
 
 // ------------------ API FUNCTIONS ------------------ //
 
@@ -104,17 +107,26 @@ export function ValidateFlacFile(file) {
     }
   }
 
-export async function DownloadTrack(id, title, artist, platform, token) {
+export async function DownloadTrack(track, platform, token) {
+    try {
     //await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
-    const res = await fetch(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
+    const res = await fetch(`${SERVER}play?id=${track.id}&token=${token}&p=${platform}`);
     if (!res.ok) throw new Error("Download failed");
     const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
+    
+    const inputFile = new Uint8Array(await blob.arrayBuffer())
+    const outFile = await TagFlacFile(inputFile, track);
+    const outBlob = new Blob([outFile.slice().buffer]);
+
+    const url = URL.createObjectURL(outBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${artist} - ${title}.flac`;
+    a.download = `${track.artist} - ${track.title}.flac`;
     a.click();
     URL.revokeObjectURL(url);
+    } catch (err) {
+      throw new Error("Download failed: " + err.message);
+    }
 }
 
 export async function DownloadMultipleTracks(tracks, token, platform, maxConcurrent = 3) {
@@ -122,7 +134,7 @@ export async function DownloadMultipleTracks(tracks, token, platform, maxConcurr
   const executing = new Set();
   
   for (const track of tracks) {
-    const promise = DownloadTrack(track.id, track.title, track.artist, platform, token);
+    const promise = DownloadTrack(track, platform, token);
     executing.add(promise);
     
     // Remove from executing set when done
@@ -240,4 +252,39 @@ async function _post(endpoint, body) {
   const res = await axios.post(SERVER + endpoint, body);
   if (res.status !== 200) throw new Error("Request failed");
   return res.data;
+}
+
+async function TagFlacFile(inputFile, metadata) {
+  const res = await fetch(metadata.cover);
+  if (!res.ok) throw new Error("Failed to fetch cover image");
+  const blob = await res.blob();
+  const coverBytes = new Uint8Array(await blob.arrayBuffer());
+  
+  const inputFiles = new Map([['input.flac', inputFile]]);
+  const args = [
+    `--set-tag=TITLE=${metadata.title || ''}`,
+    `--set-tag=ARTIST=${metadata.artist || ''}`,
+    `--set-tag=ALBUM=${metadata.album || ''}`,
+    `--set-tag=DATE=${metadata.year || ''}`
+  ];
+
+  if (coverBytes) {
+    // give the cover a filename and add an --import-picture-from argument
+    inputFiles.set('cover.jpg', coverBytes);
+    args.push(`--import-picture-from=cover.jpg`);
+  }
+
+  // final input filename argument
+  args.push('input.flac');
+
+  // call metaflac (ensure metaflac is loaded/dynamic imported elsewhere)
+  const output = await metaflac(args, {
+    inputFiles,
+    outputFileNames: ['input.flac']
+  });
+
+  const fileOut = output.files.get('input.flac');
+  // ensure we return a Uint8Array
+  if (fileOut instanceof Uint8Array) return fileOut;
+  return new Uint8Array(fileOut);
 }

@@ -6,5 +6,8 @@ export default defineConfig({
   plugins: [svelte()],
   css : {
     postcss: "./postcss.config.js"
-  }
+  },
+  optimizeDeps: {
+    exclude: ['metaflac.wasm'],
+  },
 })

@@ -419,7 +419,7 @@
 
   async function downloadTrack(track) {
     toast.promise(
-      DownloadTrack(track.id, track.title, track.artist, GetPlatformNumber(track.platform), token),
+      DownloadTrack(track, GetPlatformNumber(track.platform), token),
       {
         loading: 'Downloading...',
         success: 'Downloaded successfully!',
@@ -509,7 +509,8 @@
 
   {:else}
 
-  <div class="h-screen w-full flex flex-col">
+  <div class="h-screen w-full">
+    <div class="h-full w-full flex flex-col absolute">
     <aside class="queue-overlay absolute h-full w-full z-150 bg-black p-2" class:open={queueOverlay} >
       <button class="text-xl cursor-pointer" on:click={() => {queueOverlay = false;}}><i class="fa-solid fa-xmark"></i></button>
       <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
@@ -519,7 +520,7 @@
     <Sidebar {getUsersPlaylists} {createPlaylist} {usersPlaylists} bind:open={sidebar} />
     <Navbar {logout} bind:sidebar />
 
-    <div class="overflow-y-hidden h-full w-full p-2 grid-cols-5 grid gap-2">
+    <div class="overflow-y-hidden h-full w-full grid-cols-5 grid gap-2">
       
       <div class="hidden md:block col-start-1 h-full border-gray-800 border-2 rounded-lg">
         <LeftPanel {getUsersPlaylists} {createPlaylist} {usersPlaylists} />
@@ -537,7 +538,7 @@
     {#if currentTrack}
       <Controlbar {paused} {innerWidth} bind:open={overlay} {loop} {changeLoop} {shuffle} {currentTrack} {currentAudioTrack} {formatTime} bind:currentTime {duration} bind:volume bind:muted bind:isTrackLoading {playPreviousTrack} {playAndPause} {playNextTrack} {updateCurrentTime} {updateVolume} {muteUnmute} />
     {/if}
-
+    </div>
   </div>
 
     
