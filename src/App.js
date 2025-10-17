@@ -201,8 +201,8 @@ export async function GetListened(token) {
   return _get("listened", { token });
 }
 
-export async function GetArtist(id) {
-  return _get("artist", { id });
+export async function GetArtist(id, p) {
+  return _get("artist", { id, p });
 }
 
 export async function CreatePlaylist(name, token) {

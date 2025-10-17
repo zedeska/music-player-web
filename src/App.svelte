@@ -1,5 +1,5 @@
 <script>
-  import { DownloadTrack, DownloadMultipleTracks, ValidateAudioSource, GetUsersPlaylists, CreatePlaylist, AddTrackToPlaylist, GetAlbum, DeletePlaylist, DeleteTrackFromPlaylist, GetPlatformNumber } from './App.js';
+  import { DownloadTrack, DownloadMultipleTracks, ValidateAudioSource, GetUsersPlaylists, CreatePlaylist, AddTrackToPlaylist, GetAlbum, DeletePlaylist, DeleteTrackFromPlaylist, GetPlatformNumber, GetArtist } from './App.js';
   import toast, { Toaster } from 'svelte-french-toast';
 
   import Navbar from './components/Navbar.svelte';
@@ -80,7 +80,7 @@
         fetchAlbum
       }
     }),
-    "/artist/:id": wrap({
+    "/artist/:platform/:id": wrap({
       component: Artist,
       props: { 
         downloadTrack,
@@ -90,7 +90,8 @@
         addTrackToPlaylist,
         downloadAlbum,
         addAlbumToPlaylist,
-        addAlbumToQueue
+        addAlbumToQueue,
+        fetchArtist
       }
     }),
     "/playlist/:id": wrap({
@@ -114,6 +115,21 @@
 
   function getToken() {
     return token;
+  }
+
+  async function fetchArtist(id, p) {
+    if (!id || id === 0) {
+        toast.error("Artist ID is not provided.");
+        return;
+    }
+    
+    try {
+        const result = await GetArtist(id, p);
+        return result;
+    } catch (error) {
+        toast.error("Error fetching artist data");
+        return;
+    }
   }
 
   function changeLoop() {

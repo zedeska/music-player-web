@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { push } from "svelte-spa-router";
-
+    import { GetPlatformNumber } from "../App.js";
 
     export let currentTrack;
     export let currentTime;
@@ -48,7 +48,7 @@
         <img src="{currentTrack.cover}" alt="{currentTrack.title} cover" class="h-16 w-16 rounded-lg" />
         <div class="w-full overflow-hidden flex flex-col">
         <p class="text-sm font-semibold md:text-base truncate">{currentTrack.title}</p>
-        <p class="md:text-sm text-xs cursor-pointer hover:underline w-fit" on:click|stopPropagation={() => {push("/artist/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
+        <p class="md:text-sm text-xs cursor-pointer hover:underline w-fit" on:click|stopPropagation={() => {push("/artist/"+GetPlatformNumber(currentTrack.platform)+"/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
         </div>
     </div>
     {/if}

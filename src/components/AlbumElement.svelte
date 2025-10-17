@@ -25,7 +25,7 @@
     </button>
     <div>
         <h4>{album.title}</h4>
-        <button class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+album.artist_id)}}>{album.artist || 'Unknown'}</button>
+        <button class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+GetPlatformNumber(album.platform)+"/"+album.artist_id)}}>{album.artist || 'Unknown'}</button>
     </div>
 </div>
 

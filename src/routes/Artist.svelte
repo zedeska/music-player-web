@@ -1,8 +1,7 @@
 <script>
-    import { GetArtist } from "../App.js";
-    import toast from "svelte-french-toast";
     import TrackElement from "../components/TrackElement.svelte";
     import AlbumElement from "../components/AlbumElement.svelte";
+    import { onMount } from "svelte";
 
     export let params;
     export let downloadTrack;
@@ -13,25 +12,15 @@
     export let downloadAlbum;
     export let addAlbumToQueue;
     export let addAlbumToPlaylist;
+    export let fetchArtist;
 
     let artistData = null;
 
-    async function fetchArtist(id) {
-        if (!id || id === 0) {
-            toast.error("Artist ID is not provided.");
-            return;
-        }
-        
-        try {
-            const result = await GetArtist(id);
-            artistData = result;
-        } catch (error) {
-            toast.error("Error fetching artist data");
-            return;
-        }
-    }
-
-    $: fetchArtist(params.id);
+    onMount(async () => {
+      if (params.id) {
+        artistData = await fetchArtist(params.id, params.platform);
+      }
+    });
 
 </script>
 
