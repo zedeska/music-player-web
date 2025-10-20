@@ -37,9 +37,13 @@
     
     <div>
         <h2 class="text-4xl font-bold">Top Tracks</h2>
-        {#each artistData.top_tracks as track}
-            <TrackElement {track} {downloadTrack} {playAlbum} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} numbered={true} tracksData={artistData.top_tracks} />
-        {/each}
+        {#if !artistData.top_tracks}
+            <p>No top tracks available.</p>
+        {:else}
+            {#each artistData.top_tracks as track}
+                <TrackElement {track} {downloadTrack} {playAlbum} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} numbered={true} tracksData={artistData.top_tracks} />
+            {/each}
+        {/if}
     </div>
 
     <div>

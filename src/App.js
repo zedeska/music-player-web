@@ -1,6 +1,8 @@
 // app.js
 import axios from "axios";
 import { metaflac, preloadWorkerAndWASM } from 'metaflac.wasm/worker';
+import { saveAs } from "file-saver";
+import JSZip from "jszip";
 
 const SERVER = "https://api.yams.tf/";
 const VERSION = "v1.0.0";
@@ -107,7 +109,7 @@ export function ValidateFlacFile(file) {
     }
   }
 
-export async function DownloadTrack(track, platform, token) {
+export async function GetTrackAndTag(track, platform, token) {
     try {
     //await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
     const res = await fetch(`${SERVER}play?id=${track.id}&token=${token}&p=${platform}`);
@@ -117,29 +119,36 @@ export async function DownloadTrack(track, platform, token) {
     const inputFile = new Uint8Array(await blob.arrayBuffer())
     const outFile = await TagFlacFile(inputFile, track);
     const outBlob = new Blob([outFile.slice().buffer]);
-
-    const url = URL.createObjectURL(outBlob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${track.artist} - ${track.title}.flac`;
-    a.click();
-    URL.revokeObjectURL(url);
+    return outBlob;
     } catch (err) {
       throw new Error("Download failed: " + err.message);
     }
 }
 
-export async function DownloadMultipleTracks(tracks, token, platform, maxConcurrent = 3) {
+export async function DownloadTrack(track, platform, token) {
+  try {
+    const taggedBlob = await GetTrackAndTag(track, platform, token);
+    saveAs(taggedBlob, `${track.artist} - ${track.title}.flac`);
+  } catch (err) {
+    throw new Error("Download failed: " + err.message);
+  }
+}
+
+export async function DownloadMultipleTracks(tracks, token, platform, album, maxConcurrent = 3) {
   const results = [];
   const executing = new Set();
+  var zip = new JSZip();
+  var albumF = zip.folder(album);
   
   for (const track of tracks) {
-    const promise = DownloadTrack(track, platform, token);
-    executing.add(promise);
-    
+    const blob = GetTrackAndTag(track, platform, token);
+    executing.add(blob);
+
     // Remove from executing set when done
-    promise.finally(() => executing.delete(promise));
-    results.push(promise);
+    blob.finally(() => executing.delete(blob));
+    results.push(blob.then(taggedBlob => {
+      albumF.file(`${track.artist} - ${track.title}.flac`, taggedBlob);
+    }));
 
     if (executing.size >= maxConcurrent) {
       await Promise.race(executing);
@@ -148,7 +157,13 @@ export async function DownloadMultipleTracks(tracks, token, platform, maxConcurr
   }
 
   // Wait for all remaining downloads
-  return Promise.allSettled(results);
+  await Promise.allSettled(results)
+  
+  zip.generateAsync({type:"blob"})
+  .then(function(content) {
+      // see FileSaver.js
+      saveAs(content, album + ".zip");
+  });
 }
 
 export async function Login(username, password) {

@@ -444,15 +444,16 @@
     );
   }
 
-  async function downloadAlbum(tracks, platform, id=0) {
+  async function downloadAlbum(tracks, platform, id=0, album="") {
     if (id && id != 0) {
-      const album = await fetchAlbum(id, platform);
-      if (album) {
-        tracks = album.tracks;
+      const album_data = await fetchAlbum(id, platform);
+      if (album_data) {
+        tracks = album_data.tracks;
       }
+      album = album_data.title;
     }
     toast.promise(
-      DownloadMultipleTracks(tracks, token, platform),
+      DownloadMultipleTracks(tracks, token, platform, album),
       {
         loading: `Downloading...`,
         success: `Downloaded successfully!`,
@@ -486,7 +487,6 @@
   async function addTrackToPlaylist(playlistId, tracks) {
     try {
       await AddTrackToPlaylist(playlistId, tracks, token);
-      toast.success("Track added to playlist successfully!");
     } catch (error) {
       toast.error("Error adding track to playlist");
     }

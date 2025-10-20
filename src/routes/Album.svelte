@@ -31,7 +31,7 @@
             <h2 class="md:text-7xl text-5xl font-bold row-start-2 overflow-hidden text-ellipsis whitespace-nowrap" >{albumData.title}</h2>
             <div class="md:row-start-3 grid grid-cols-3 md:text-base text-sm align-items-center">
                 <p class="self-end cursor-pointer col-span-2 md:col-span-1" ><button class="hover:underline cursor-pointer" on:click={() => push(`/artist/${GetPlatformNumber(albumData.platform)}/${albumData.artist_id}`)}>{albumData.artist}</button> • {albumData.year} • {albumData.track_count} Tracks
-                    <button class="cursor-pointer self-end" on:click={() => {downloadAlbum(albumData.tracks, GetPlatformNumber(albumData.platform))}}>
+                    <button class="cursor-pointer self-end" on:click={() => {downloadAlbum(albumData.tracks, GetPlatformNumber(albumData.platform), 0 , albumData.title)}}>
                     <i class="fa-solid fa-download"></i>
                   </button>
                 </p>
