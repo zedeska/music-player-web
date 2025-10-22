@@ -3,7 +3,7 @@ import axios from "axios";
 import { metaflac, preloadWorkerAndWASM } from 'metaflac.wasm/worker';
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
-import MP3Tag from 'mp3tag.js';
+import { ID3Writer } from "browser-id3-writer";
 
 const SERVER = "https://api.yams.tf/";
 const VERSION = "v1.0.0";
@@ -132,13 +132,18 @@ async function GetAndTagTrack(track, platform, quality, token) {
         return {blob: taggedMp3, fileName: `${track.artist} - ${track.title}.mp3` };
     }
   } catch (err) {
+    console.error("Error fetching and tagging track:", err);
     throw new Error("Download failed: " + err.message);
   }
 }
 
 export async function DownloadTrack(track, platform, quality, token) {
-  const fileInfo = await GetAndTagTrack(track, platform, quality, token);
-  saveAs(fileInfo.blob, fileInfo.fileName);
+  try {
+    const fileInfo = await GetAndTagTrack(track, platform, quality, token);
+    saveAs(fileInfo.blob, fileInfo.fileName);
+  } catch (error) {
+    throw new Error("Download failed: " + error.message);
+  }
 }
 
 export async function DownloadMultipleTracks(tracks, platform, quality, token, album, maxConcurrent = 3) {
@@ -277,18 +282,57 @@ async function _post(endpoint, body) {
 }
 
 async function TagMp3File(inputFile, metadata) {
+  try {
+    // get mp3 bytes and cover bytes (if any)
+    const mp3AB = await inputFile.arrayBuffer();
+    const mp3Bytes = new Uint8Array(mp3AB);
 
-  const mp3tag = new MP3Tag(await inputFile.ArrayBuffer());
+    let imageData = null;
+    if (metadata.cover) {
+      // metadata.cover may be URL, data URL or Blob
+      if (metadata.cover instanceof Blob) {
+        imageData = await metadata.cover.arrayBuffer();
+      } else if (typeof metadata.cover === 'string') {
+        if (metadata.cover.startsWith('data:')) {
+          // data URL -> ArrayBuffer
+          const base64 = metadata.cover.split(',',2)[1] || '';
+          const binary = atob(base64);
+          const arr = new Uint8Array(binary.length);
+          for (let i=0;i<binary.length;i++) arr[i] = binary.charCodeAt(i);
+          imageData = arr.buffer;
+        } else {
+          // remote URL -> fetch
+          const r = await fetch(metadata.cover);
+          if (r.ok) {
+            const b = await r.blob();
+            imageData = await b.arrayBuffer();
+          }
+        }
+      }
+    }
 
-  mp3tag.tags.title = metadata.title || '';
-  mp3tag.tags.artist = metadata.artist || '';
-  mp3tag.tags.album = metadata.album || '';
-  mp3tag.tags.year = metadata.year || '';
+    // create writer
+    const writer = new ID3Writer(mp3Bytes.buffer);
+    writer.setFrame('TIT2', metadata.title || '')
+          .setFrame('TPE1', [metadata.artist || ''])
+          .setFrame('TALB', metadata.album || '')
+          .setFrame('TYER', metadata.year || '');
 
-  mp3tag.save();
-  const out = mp3tag.buffer instanceof Uint8Array ? mp3tag.buffer : new Uint8Array(mp3tag.buffer);
-  return new Blob([out.slice().buffer]);
+    if (imageData) {
+      writer.setFrame('APIC', {
+        type: 3,
+        data: imageData,
+        description: 'cover'
+      });
+    }
 
+    writer.addTag();
+    const taggedBlob = writer.getBlob();
+    return taggedBlob;
+  } catch (err) {
+    console.warn('TagMp3File failed, returning original file', err);
+    return inputFile;
+  }
 }
 
 async function TagFlacFile(inputFile, metadata) {
