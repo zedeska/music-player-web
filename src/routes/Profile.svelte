@@ -1,7 +1,11 @@
 <script>
   import { UploadTrack, ValidateFlacFile } from "../App.js";
+  import { onMount } from "svelte";
+  import toast from "svelte-french-toast";
   
-  export let userToken;
+  //export let userToken;
+  
+  export let getSetQuality;
   
   let fileInput;
   let selectedFiles = null;
@@ -10,7 +14,9 @@
   let errors = [];
   let successMessage = '';
   let addMusic = false;
+  let quality;
 
+  /*
   function handleFileSelect(event) {
     const files = Array.from(event.target.files);
     selectedFiles = files;
@@ -60,8 +66,33 @@
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
+    */
+
+  onMount(() => {
+    quality = getSetQuality();
+  });
+
 </script>
 
+<div>
+  <h1 class="text-3xl mb-3">Settings</h1>
+  <div class="mb-6">
+    <label for="quality" class="block text-sm font-medium mb-2">Streaming Quality:</label>
+    <select
+      id="quality"
+      bind:value={quality}
+      on:change={() => {
+        getSetQuality(quality);
+        toast.success('Quality setting updated.');
+      }}
+      class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm bg-black text-white"
+    >
+      <option value={1}>320kbps MP3 (High quality)</option>
+      <option value={2}>CD-Lossless (16bit / 44.1 kHz FLAC)</option>
+    </select>
+  </div>
+</div>
+<!--
 <h2>Music</h2>
 <button on:click={() => addMusic = !addMusic} class="mb-4 px-4 py-2 bg-black text-white rounded hover:bg-violet-700 border-1 border-violet-900">
   {addMusic ? 'Close Upload' : 'Add Music'}
@@ -71,7 +102,6 @@
   <div class="m-auto">
     <h2 class="text-2xl font-bold mb-6">Upload FLAC Audio</h2>
     
-    <!-- File Input -->
     <div class="mb-4">
       <label for="flac-upload" class="block text-sm font-medium mb-2">
         Select FLAC Audio File
@@ -88,7 +118,6 @@
       />
     </div>
 
-    <!-- Selected File Info -->
     {#if selectedFiles}
       <div class="mb-4 p-4 border rounded-lg bg-black">
         <h3 class="font-semibold mb-2">Selected Files:</h3>
@@ -119,7 +148,6 @@
       </div>
     {/if}
 
-    <!-- Upload Progress -->
     {#if uploading}
       <div class="upload-progress mb-4">
         <div class="flex justify-between items-center mb-2">
@@ -135,7 +163,6 @@
       </div>
     {/if}
 
-    <!-- Error Messages -->
     {#if errors.length > 0}
       <div class="error-messages mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
         <h4 class="font-semibold mb-1">Errors:</h4>
@@ -147,14 +174,12 @@
       </div>
     {/if}
 
-    <!-- Success Message -->
     {#if successMessage}
       <div class="success-message mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
         {successMessage}
       </div>
     {/if}
 
-    <!-- File Requirements -->
     <div class="mt-6 p-4 bg-black border border-violet-900 rounded">
       <h4 class="font-semibold mb-2">File Requirements:</h4>
       <ul class="text-sm space-y-1">
@@ -165,4 +190,6 @@
       </ul>
     </div>
   </div>
+
 {/if}
+-->

@@ -19,6 +19,7 @@
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "metaflac.wasm": "^0.4.0",
+    "mp3tag.js": "^3.14.1",
     "postcss": "^8.5.6",
     "svelte": "^3.59.2",
     "svelte-french-toast": "^1.2.0",

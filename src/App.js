@@ -3,6 +3,7 @@ import axios from "axios";
 import { metaflac, preloadWorkerAndWASM } from 'metaflac.wasm/worker';
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
+import MP3Tag from 'mp3tag.js';
 
 const SERVER = "https://api.yams.tf/";
 const VERSION = "v1.0.0";
@@ -109,45 +110,51 @@ export function ValidateFlacFile(file) {
     }
   }
 
-export async function GetTrackAndTag(track, platform, token) {
-    try {
-    //await ValidateAudioSource(`${SERVER}play?id=${id}&token=${token}&p=${platform}`);
-    const res = await fetch(`${SERVER}play?id=${track.id}&token=${token}&p=${platform}`);
+async function GetTrack(track, platform, quality, token) {
+  try {
+    const res = await fetch(`${SERVER}play?id=${track.id}&token=${token}&p=${platform}&q=${quality}`);
     if (!res.ok) throw new Error("Download failed");
-    const blob = await res.blob();
-    
-    const inputFile = new Uint8Array(await blob.arrayBuffer())
-    const outFile = await TagFlacFile(inputFile, track);
-    const outBlob = new Blob([outFile.slice().buffer]);
-    return outBlob;
-    } catch (err) {
-      throw new Error("Download failed: " + err.message);
-    }
+    return await res.blob();
+  } catch (error) {
+    throw new Error("Error fetching track: " + error.message);
+  }
 }
 
-export async function DownloadTrack(track, platform, token) {
+async function GetAndTagTrack(track, platform, quality, token) {
   try {
-    const taggedBlob = await GetTrackAndTag(track, platform, token);
-    saveAs(taggedBlob, `${track.artist} - ${track.title}.flac`);
+    const file = await GetTrack(track, platform, quality, token);
+    switch (quality) {
+      case 2:
+        const taggedFile = await TagFlacFile(file, track);
+        return {blob: taggedFile, fileName: `${track.artist} - ${track.title}.flac`};
+      case 1:
+        const taggedMp3 = await TagMp3File(file, track);
+        return {blob: taggedMp3, fileName: `${track.artist} - ${track.title}.mp3` };
+    }
   } catch (err) {
     throw new Error("Download failed: " + err.message);
   }
 }
 
-export async function DownloadMultipleTracks(tracks, token, platform, album, maxConcurrent = 3) {
+export async function DownloadTrack(track, platform, quality, token) {
+  const fileInfo = await GetAndTagTrack(track, platform, quality, token);
+  saveAs(fileInfo.blob, fileInfo.fileName);
+}
+
+export async function DownloadMultipleTracks(tracks, platform, quality, token, album, maxConcurrent = 3) {
   const results = [];
   const executing = new Set();
   var zip = new JSZip();
   var albumF = zip.folder(album);
   
   for (const track of tracks) {
-    const blob = GetTrackAndTag(track, platform, token);
-    executing.add(blob);
+    const file = GetAndTagTrack(track, platform, quality, token);
+    executing.add(file);
 
     // Remove from executing set when done
-    blob.finally(() => executing.delete(blob));
-    results.push(blob.then(taggedBlob => {
-      albumF.file(`${track.artist} - ${track.title}.flac`, taggedBlob);
+    file.finally(() => executing.delete(file));
+    results.push(file.then(taggedBlob => {
+      albumF.file(taggedBlob.fileName, taggedBlob.blob);
     }));
 
     if (executing.size >= maxConcurrent) {
@@ -269,13 +276,30 @@ async function _post(endpoint, body) {
   return res.data;
 }
 
+async function TagMp3File(inputFile, metadata) {
+
+  const mp3tag = new MP3Tag(await inputFile.ArrayBuffer());
+
+  mp3tag.tags.title = metadata.title || '';
+  mp3tag.tags.artist = metadata.artist || '';
+  mp3tag.tags.album = metadata.album || '';
+  mp3tag.tags.year = metadata.year || '';
+
+  mp3tag.save();
+  const out = mp3tag.buffer instanceof Uint8Array ? mp3tag.buffer : new Uint8Array(mp3tag.buffer);
+  return new Blob([out.slice().buffer]);
+
+}
+
 async function TagFlacFile(inputFile, metadata) {
   const res = await fetch(metadata.cover);
   if (!res.ok) throw new Error("Failed to fetch cover image");
   const blob = await res.blob();
   const coverBytes = new Uint8Array(await blob.arrayBuffer());
+
+  const inputFileArray = new Uint8Array(await inputFile.arrayBuffer())
   
-  const inputFiles = new Map([['input.flac', inputFile]]);
+  const taggedFile = new Map([['input.flac', inputFileArray]]);
   const args = [
     `--set-tag=TITLE=${metadata.title || ''}`,
     `--set-tag=ARTIST=${metadata.artist || ''}`,
@@ -285,7 +309,7 @@ async function TagFlacFile(inputFile, metadata) {
 
   if (coverBytes) {
     // give the cover a filename and add an --import-picture-from argument
-    inputFiles.set('cover.jpg', coverBytes);
+    taggedFile.set('cover.jpg', coverBytes);
     args.push(`--import-picture-from=cover.jpg`);
   }
 
@@ -294,12 +318,11 @@ async function TagFlacFile(inputFile, metadata) {
 
   // call metaflac (ensure metaflac is loaded/dynamic imported elsewhere)
   const output = await metaflac(args, {
-    inputFiles,
+    inputFiles: taggedFile,
     outputFileNames: ['input.flac']
   });
 
   const fileOut = output.files.get('input.flac');
-  // ensure we return a Uint8Array
-  if (fileOut instanceof Uint8Array) return fileOut;
-  return new Uint8Array(fileOut);
+  const outUint8 = fileOut instanceof Uint8Array ? fileOut : new Uint8Array(fileOut);
+  return new Blob([outUint8.slice().buffer]);
 }

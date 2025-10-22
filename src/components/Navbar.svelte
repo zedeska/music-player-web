@@ -40,5 +40,6 @@
 <ContextMenu bind:this={userMenu} >
     <i class="fa-solid fa-xmark"></i>
     <Divider />
+    <Item on:click={() => push("/profile")} >Profile</Item>
     <Item on:click={logout()} >Log out</Item>
 </ContextMenu>

@@ -20,6 +20,7 @@
   import Playlist from './routes/Playlist.svelte';
   import Profile from './routes/Profile.svelte';
   import { onMount } from 'svelte';
+  import { bind } from 'svelte/internal';
 
   const SERVER = "https://api.yams.tf/";
 
@@ -39,6 +40,7 @@
   let overlay = false;
   let queueOverlay = false;
   let innerWidth = 1920;
+  let quality = 2;
 
   let queue = [];
 
@@ -109,10 +111,22 @@
     }),
     "/profile": wrap({
       component: Profile,
-      props: { userToken: token }
+      props: { 
+        userToken: token,
+        getSetQuality
+      }
     })
   };
 
+  function getSetQuality(paramQuality = null) {
+    if (paramQuality !== null) {
+      quality = paramQuality;
+      localStorage.setItem('quality', String(quality));
+    } else {
+      return quality;
+    }
+  }
+  
   function getToken() {
     return token;
   }
@@ -266,7 +280,7 @@
 
   async function init(track) {
     currentAudioTrack.remove();
-    const audioUrl = `${SERVER}play?id=${track.id}&token=${token}&p=${GetPlatformNumber(track.platform)}`;
+    const audioUrl = `${SERVER}play?id=${track.id}&token=${token}&p=${GetPlatformNumber(track.platform)}&q=${quality}`;
     
     // Show loading state
     isTrackLoading = true;
@@ -435,7 +449,7 @@
 
   async function downloadTrack(track) {
     toast.promise(
-      DownloadTrack(track, GetPlatformNumber(track.platform), token),
+      DownloadTrack(track, GetPlatformNumber(track.platform), quality, token),
       {
         loading: 'Downloading...',
         success: 'Downloaded successfully!',
@@ -453,7 +467,7 @@
       album = album_data.title;
     }
     toast.promise(
-      DownloadMultipleTracks(tracks, token, platform, album),
+      DownloadMultipleTracks(tracks, platform, quality, token, album),
       {
         loading: `Downloading...`,
         success: `Downloaded successfully!`,
@@ -505,13 +519,16 @@
     if (localStorage.getItem('token')) {
       token = localStorage.getItem('token');
     }
+    if (localStorage.getItem('quality')) {
+      quality = Number(localStorage.getItem('quality'));
+    } else {
+      localStorage.setItem('quality', String(quality));
+    }
 
     // ensure overlays are closed on fresh load (works around cached DOM / SW hydration)
     overlay = false;
     queueOverlay = false;
 
-    // defensive: remove any stray .open classes left in cached HTML
-    document.querySelectorAll('.queue-overlay.open, .player-overlay.open').forEach(el => el.classList.remove('open'));
   });
 </script>
 
