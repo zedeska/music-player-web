@@ -110,6 +110,7 @@ export function ValidateFlacFile(file) {
     }
   }
 
+  /*
 async function GetTrack(track, platform, quality, token) {
   try {
     const res = await fetch(`${SERVER}play?id=${track.id}&token=${token}&p=${platform}&q=${quality}`);
@@ -117,6 +118,32 @@ async function GetTrack(track, platform, quality, token) {
     return await res.blob();
   } catch (error) {
     throw new Error("Error fetching track: " + error.message);
+  }
+}
+  */
+
+async function GetTrack(track, platform, quality, token) {
+  const url = `${SERVER}play?id=${track.id}&token=${token}&p=${platform}&q=${quality}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Download failed");
+
+  if (res.body && res.body.getReader) {
+    const reader = res.body.getReader();
+    const chunks = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      // yield to event loop occasionally (non-blocking)
+      await Promise.resolve();
+    }
+    // concatenate Uint8Array chunks into a single Blob
+    const blob = new Blob(chunks, { type: res.headers.get('content-type') || 'application/octet-stream' });
+    return blob;
+  } else {
+    // fallback: older browsers / no stream support
+    const b = await res.blob();
+    return b;
   }
 }
 
@@ -151,31 +178,35 @@ export async function DownloadMultipleTracks(tracks, platform, quality, token, a
   const executing = new Set();
   var zip = new JSZip();
   var albumF = zip.folder(album);
-  
-  for (const track of tracks) {
-    const file = GetAndTagTrack(track, platform, quality, token);
-    executing.add(file);
 
-    // Remove from executing set when done
-    file.finally(() => executing.delete(file));
-    results.push(file.then(taggedBlob => {
-      albumF.file(taggedBlob.fileName, taggedBlob.blob);
-    }));
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  for (const track of tracks) {
+    const filePromise = GetAndTagTrack(track, platform, quality, token);
+    executing.add(filePromise);
+    filePromise.finally(() => executing.delete(filePromise));
+    results.push(
+      filePromise.then(taggedBlob => {
+        albumF.file(taggedBlob.fileName, taggedBlob.blob);
+      })
+    );
 
     if (executing.size >= maxConcurrent) {
       await Promise.race(executing);
     }
-    setTimeout(() => {}, 500); // Slight delay to avoid overwhelming the browser
+
+    // small awaited pause to avoid tight loop
+    await sleep(150);
   }
 
-  // Wait for all remaining downloads
-  await Promise.allSettled(results)
-  
-  zip.generateAsync({type:"blob"})
-  .then(function(content) {
-      // see FileSaver.js
-      saveAs(content, album + ".zip");
-  });
+  await Promise.allSettled(results);
+
+  // Use JSZip streaming generation to reduce peak memory
+  const content = await zip.generateAsync(
+    { type: "blob", streamFiles: true },
+  );
+
+  saveAs(content, album + ".zip");
 }
 
 export async function Login(username, password) {
@@ -316,7 +347,8 @@ async function TagMp3File(inputFile, metadata) {
     writer.setFrame('TIT2', metadata.title || '')
           .setFrame('TPE1', [metadata.artist || ''])
           .setFrame('TALB', metadata.album || '')
-          .setFrame('TYER', metadata.year || '');
+          .setFrame('TYER', metadata.year || '')
+          .setFrame('TRCK', metadata.media_count > 0 ? metadata.media_count : '');
 
     if (imageData) {
       writer.setFrame('APIC', {
@@ -348,7 +380,8 @@ async function TagFlacFile(inputFile, metadata) {
     `--set-tag=TITLE=${metadata.title || ''}`,
     `--set-tag=ARTIST=${metadata.artist || ''}`,
     `--set-tag=ALBUM=${metadata.album || ''}`,
-    `--set-tag=DATE=${metadata.year || ''}`
+    `--set-tag=DATE=${metadata.year || ''}`,
+    `--set-tag=TRACKNUMBER=${metadata.media_count > 0 ? metadata.media_count : ''}`
   ];
 
   if (coverBytes) {
