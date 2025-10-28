@@ -271,7 +271,7 @@
   function addToQueue(track) {
     let included = false;
     queue.forEach((value) => {
-      if (track === value.track) {
+      if (track.id === value.track.id && track.platform === value.track.platform) {
         included = true;
         return;
       }
