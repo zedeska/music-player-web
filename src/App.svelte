@@ -549,11 +549,11 @@
   <div class="h-screen w-full">
     <div class="h-full w-full flex flex-col absolute overflow-hidden">
     <aside class="queue-overlay absolute h-full w-full z-150 bg-black p-2" class:open={queueOverlay} >
-      <button class="text-xl cursor-pointer" on:click={() => {queueOverlay = false;}}><i class="fa-solid fa-xmark"></i></button>
+      <button class="text-xl cursor-pointer" on:click={() => {queueOverlay = false;}}><img src="/xmark.svg" alt=""></button>
       <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
     </aside>
 
-    <PlayerOverlay {paused} bind:open={overlay} bind:openQueue={queueOverlay} {loop} {changeLoop} {shuffle} {currentTrack} {currentAudioTrack} {formatTime} bind:currentTime {duration} bind:volume bind:muted bind:isTrackLoading {playPreviousTrack} {playAndPause} {playNextTrack} {updateCurrentTime} {updateVolume} {muteUnmute} />
+    <PlayerOverlay {paused} bind:open={overlay} bind:openQueue={queueOverlay} {loop} {changeLoop} {shuffle} {currentTrack} {currentAudioTrack} {formatTime} bind:currentTime {duration} bind:isTrackLoading {playPreviousTrack} {playAndPause} {playNextTrack} {updateCurrentTime} {updateVolume} />
     <Sidebar {getUsersPlaylists} {createPlaylist} {usersPlaylists} bind:open={sidebar} />
     <Navbar {logout} bind:sidebar />
 

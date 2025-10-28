@@ -28,7 +28,7 @@
 
 <div>
     <button class="cursor-pointer text-sm" on:click|stopPropagation={() => makingPlaylist = !makingPlaylist} >
-        <i class="fa-solid fa-plus"></i> New playlist
+        <img src="/plus.svg" alt=""> New playlist
     </button>
     {#if makingPlaylist}
     <div>
@@ -46,7 +46,7 @@
     {#each usersPlaylists.playlists as playlist}
         <div class="flex flex-row gap-2 items-center">
             <button on:click={() => push(`/playlist/${playlist.id}`)} class="cursor-pointer">
-                <i class="fa-solid fa-list"></i> {playlist.name}
+                <img src="/playlist.svg" alt=""> {playlist.name}
             </button>
         </div>
     {/each}

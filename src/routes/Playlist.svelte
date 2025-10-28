@@ -50,14 +50,14 @@
                                 push("/");
                             }
                         }}>
-                            <i class="fa-solid fa-trash-can"></i>
+                            <img src="/trash-solid.svg" alt="">
                         </button>
                         <button class="cursor-pointer" on:click={() => {downloadAlbum(playlistData.tracks, 0, 0, playlistData.name)}}>
-                            <i class="fa-solid fa-download"></i>
+                            <img src="/download.svg" alt="">
                         </button>
                     </div>
                 </div>
-                <i on:click={() => {playAlbum(playlistData.tracks)}} class="justify-self-end self-end fa-solid fa-circle-play text-5xl mt-3 cursor-pointer text-violet-900 col-start-3"></i>
+                <img on:click={() => {playAlbum(playlistData.tracks)}} class="justify-self-end self-end fa-solid fa-circle-play text-5xl mt-3 cursor-pointer text-violet-900 col-start-3" src="/play.svg" alt="">
             </div>
         </div>
     </div>

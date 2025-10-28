@@ -30,12 +30,12 @@
         {#if numbered}
             <button class="relative cursor-pointer" on:click={() => {playAlbum(tracksData, 0, 0, tracksData.indexOf(track))}}>
                 <img class="min-h-[40px] min-w-[40px] max-h-[40px] max-w-[40px] relative rounded-lg" src="{track.cover || ''}" alt="">
-                <i class="fa-solid fa-play group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
+                <img src="/play-solid.svg" alt="" class="group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
             </button>
         {:else}
             <button class="relative cursor-pointer" on:click={() => {init(track)}}>
                 <img class="min-h-[40px] min-w-[40px] max-h-[40px] max-w-[40px] relative rounded-lg" src="{track.cover || ''}" alt="">
-                <i class="fa-solid fa-play group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
+                <img src="/play-solid.svg" alt="" class="group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
             </button>
         {/if}
         <div class="">
@@ -61,12 +61,12 @@
             <Item on:click={async () => {await deleteTrackFromPlaylist(playlistID,track.id)}}>Remove From Playlist</Item>
         {/if}
     {:else}
-        <Item autoclose={false} on:click={() => addingToPlaylist = false} ><i class="fa-solid fa-arrow-left"></i></Item>
+        <Item autoclose={false} on:click={() => addingToPlaylist = false} ><img src="/arrow-left.svg" alt=""></Item>
         <Divider />
         <div class="overflow-y-scroll">
             {#each playlists.playlists as playlist}
                 <Item on:click={async () => {addingToPlaylist = false; await addTrackToPlaylist(playlist.id, [{id: track.id, platform: GetPlatformNumber(track.platform)}])}} class="cursor-pointer">
-                    <i class="fa-solid fa-list"></i> {playlist.name}
+                    <img src="/playlist.svg" alt=""> {playlist.name}
                 </Item>
             {/each}
         </div>

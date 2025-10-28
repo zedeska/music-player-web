@@ -6,15 +6,12 @@
     export let currentTrack;
     export let currentTime;
     export let duration;
-    export let volume;
-    export let muted;
     export let isTrackLoading;
     export let playPreviousTrack;
     export let playAndPause;
     export let playNextTrack;
     export let updateCurrentTime;
     export let updateVolume;
-    export let muteUnmute;
     export let formatTime;
     export let currentAudioTrack;
     export let shuffle;
@@ -24,14 +21,6 @@
     export let openQueue = false;
     export let paused = false;
 
-    let playIcon = "";
-
-    $: if (paused) {
-      playIcon = 'fa-play';
-    } else {
-      playIcon = 'fa-pause';
-    }
-
     onMount(() => {
         updateVolume();
     });
@@ -40,7 +29,7 @@
  <aside class="music-control player-overlay absolute md:hidden h-full w-full bg-black z-100" class:open={open}>
     <div class="w-full h-full flex flex-col items-center p-5 gap-2">
       <div class="justify-start w-full">
-        <button class="cursor-pointer justify-start text-lg mb-3 ml-2" on:click={() => {open = !open}}><i class="fa-regular fa-square-caret-down"></i></button>
+        <button class="cursor-pointer justify-start text-lg mb-3 ml-2" on:click={() => {open = !open}}><img src="/arrow-down-tag.svg" alt=""></button>
       </div>
     {#if currentTrack}
     <div class="flex flex-col w-full gap-3">
@@ -66,12 +55,12 @@
     </div>
 
     <div class="flex items-center gap-10 justify-center">
-        <button class="text-2xl" on:click={shuffle} ><i class="fa-solid fa-shuffle"></i></button>
-        <button class="text-2xl" on:click={playPreviousTrack} ><i class="cursor-pointer fa-solid fa-backward"></i></button>
+        <button class="text-2xl" on:click={shuffle} ><img src="/shuffle.svg" alt=""></button>
+        <button class="text-2xl" on:click={playPreviousTrack} ><img class="cursor-pointer" src="/backward-solid.svg" alt=""></button>
         <button disabled={isTrackLoading} on:click={playAndPause} class="text-white hover:text-gray-300 cursor-pointer text-6xl">
-        <i class={`fa-solid ${playIcon}`}></i>
+        <img src={`/ ${paused ? 'play-solid' : 'pause-solid'}.svg`} alt="">
         </button>
-        <button class="text-2xl" on:click={playNextTrack}><i class="cursor-pointer fa-solid fa-forward"></i></button>
+        <button class="text-2xl" on:click={playNextTrack}><img src="/forward-solid.svg" alt=""></button>
         <button class="text-2xl" on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
     </div>
 
