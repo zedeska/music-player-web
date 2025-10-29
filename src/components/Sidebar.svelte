@@ -27,7 +27,7 @@
 <p class="text-2xl text-center" >Library</p>
 
 <div>
-    <button class="cursor-pointer text-sm" on:click|stopPropagation={() => makingPlaylist = !makingPlaylist} >
+    <button class="cursor-pointer text-sm flex" on:click|stopPropagation={() => makingPlaylist = !makingPlaylist} >
         <img src="/plus.svg" alt=""> New playlist
     </button>
     {#if makingPlaylist}
@@ -45,8 +45,8 @@
 {#if usersPlaylists && usersPlaylists.playlists}
     {#each usersPlaylists.playlists as playlist}
         <div class="flex flex-row gap-2 items-center">
-            <button on:click={() => push(`/playlist/${playlist.id}`)} class="cursor-pointer">
-                <img src="/playlist.svg" alt=""> {playlist.name}
+            <button on:click={() => push(`/playlist/${playlist.id}`)} class="cursor-pointer flex">
+                <img class="text-sm" src="/playlist.svg" alt=""> {playlist.name}
             </button>
         </div>
     {/each}

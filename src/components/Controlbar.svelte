@@ -50,7 +50,7 @@
         <button class="hidden md:block cursor-pointer" on:click={shuffle} ><img src="/shuffle.svg" alt="Shuffle" /></button>
         <button class="cursor-pointer" on:click|stopPropagation={playPreviousTrack} ><img src="/backward-solid.svg" alt="Previous" /></button>
         <button disabled={isTrackLoading} on:click|stopPropagation={playAndPause} class="text-white hover:text-gray-300 cursor-pointer">
-        <img src={`/ ${paused ? 'play-solid' : 'pause-solid'}.svg`} alt="">
+        <img src={paused ? '/play-solid.svg' : '/pause-solid.svg'} alt="">
         </button>
         <button class="cursor-pointer" on:click|stopPropagation={playNextTrack}><img class="cursor-pointer" src="/forward-solid.svg" alt="Next" /></button>
         <button class="hidden md:block" on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
@@ -67,7 +67,7 @@
     
     <!-- Volume Control -->
     <div class="hidden md:flex items-center gap-2 col-start-6 justify-self-end">
-        <img src={muted ? '/volume-off-solid.svg' : '/volume-high-solid.svg'} alt="" class="cursor-pointer" on:click={muteUnmute} />
+        <img src={muted ? '/sound-off-solid.svg' : '/sound-high-solid.svg'} alt="" class="cursor-pointer" on:click={muteUnmute} />
         <input 
         type="range" 
         min="0" 
