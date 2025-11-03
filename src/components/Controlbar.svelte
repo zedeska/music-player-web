@@ -48,11 +48,11 @@
     <div class="items-center flex flex-col w-1/2 md:col-span-4 md:col-start-2 col-start-6 md:justify-self-center">
       <div class="flex items-center gap-4 justify-center">
         <button class="hidden md:block cursor-pointer" on:click={shuffle} ><img src="/shuffle.svg" alt="Shuffle" /></button>
-        <button class="cursor-pointer" on:click|stopPropagation={playPreviousTrack} ><img src="/backward-solid.svg" alt="Previous" /></button>
-        <button disabled={isTrackLoading} on:click|stopPropagation={playAndPause} class="text-white hover:text-gray-300 cursor-pointer">
+        <button class="cursor-pointer" on:click|stopPropagation={playPreviousTrack} ><img class="min-w-[18px]" src="/backward-solid.svg" alt="Previous" /></button>
+        <button disabled={isTrackLoading} on:click|stopPropagation={playAndPause} class="text-white min-w-[18px] hover:text-gray-300 cursor-pointer">
         <img src={paused ? '/play-solid.svg' : '/pause-solid.svg'} alt="">
         </button>
-        <button class="cursor-pointer" on:click|stopPropagation={playNextTrack}><img class="cursor-pointer" src="/forward-solid.svg" alt="Next" /></button>
+        <button class="cursor-pointer" on:click|stopPropagation={playNextTrack}><img class="cursor-pointer min-w-[18px]" src="/forward-solid.svg" alt="Next" /></button>
         <button class="hidden md:block" on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
       </div>
       <div class="md:flex hidden flex-row items-center w-full gap-2">

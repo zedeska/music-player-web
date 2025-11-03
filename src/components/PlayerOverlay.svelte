@@ -55,13 +55,13 @@
     </div>
 
     <div class="flex items-center gap-10 justify-center">
-        <button class="text-2xl" on:click={shuffle} ><img src="/shuffle.svg" alt=""></button>
-        <button class="text-2xl" on:click={playPreviousTrack} ><img class="cursor-pointer" src="/backward-solid.svg" alt=""></button>
-        <button disabled={isTrackLoading} on:click={playAndPause} class="text-white hover:text-gray-300 cursor-pointer text-6xl">
-        <img src={`/ ${paused ? 'play-solid' : 'pause-solid'}.svg`} alt="">
+        <button on:click={shuffle} ><img src="/shuffle.svg" alt=""></button>
+        <button on:click={playPreviousTrack} ><img class="cursor-pointer" src="/backward-solid.svg" alt=""></button>
+        <button disabled={isTrackLoading} on:click={playAndPause} class="text-white hover:text-gray-300 cursor-pointer">
+        <img class="min-w-[64px]" src={`/${paused ? 'play-solid' : 'pause-solid'}.svg`} alt="">
         </button>
-        <button class="text-2xl" on:click={playNextTrack}><img src="/forward-solid.svg" alt=""></button>
-        <button class="text-2xl" on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
+        <button on:click={playNextTrack}><img src="/forward-solid.svg" alt=""></button>
+        <button on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
     </div>
 
     <div class="flex flex-row items-center gap-3 justify-center fixed bottom-0 left-0 relative w-full">
