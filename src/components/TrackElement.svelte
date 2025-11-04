@@ -61,12 +61,14 @@
             <Item on:click={async () => {await deleteTrackFromPlaylist(playlistID,track.id)}}>Remove From Playlist</Item>
         {/if}
     {:else}
-        <Item autoclose={false} on:click={() => addingToPlaylist = false} ><img src="/arrow-left.svg" alt=""></Item>
+        <button on:click={() => addingToPlaylist = false} class="cursor-pointer" data-autoclose="false" ><img height="16px" width="16px" src="/arrow-left.svg" alt=""></button>
         <Divider />
-        <div class="overflow-y-scroll">
+        <div class="w-30">
             {#each playlists.playlists as playlist}
                 <Item on:click={async () => {addingToPlaylist = false; await addTrackToPlaylist(playlist.id, [{id: track.id, platform: GetPlatformNumber(track.platform)}])}} class="cursor-pointer">
-                    <img src="/playlist.svg" alt=""> {playlist.name}
+                    <span class="flex text-ellipsis">
+                        <img src="/playlist.svg" alt=""> {playlist.name}
+                    </span>
                 </Item>
             {/each}
         </div>

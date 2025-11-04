@@ -39,15 +39,17 @@
             addingToPlaylist = true;
         }}>Add To Playlist</Item>
     {:else}
-        <Item autoclose={false} on:click={() => addingToPlaylist = false} ><i class="fa-solid fa-arrow-left"></i></Item>
+        <button on:click={() => addingToPlaylist = false} class="cursor-pointer" data-autoclose="false" ><img height="16px" width="16px" src="/arrow-left.svg" alt=""></button>
         <Divider />
-        <div class="overflow-y-scroll">
+        <div class="w-30">
             {#each playlists.playlists as playlist}
                 <Item on:click={async () => {
                     addingToPlaylist = false;
                     await addAlbumToPlaylist(playlist.id, [], album.id, GetPlatformNumber(album.platform));
-                    }} class="cursor-pointer">
-                    <i class="fa-solid fa-list"></i> {playlist.name}
+                    }}>
+                    <span class="flex text-ellipsis">
+                        <img src="/playlist.svg" alt=""> {playlist.name}
+                    </span>
                 </Item>
             {/each}
         </div>

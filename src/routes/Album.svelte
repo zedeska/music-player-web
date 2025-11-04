@@ -32,10 +32,10 @@
             <div class="md:row-start-3 grid grid-cols-3 md:text-base text-sm align-items-center">
                 <p class="self-end cursor-pointer col-span-2 md:col-span-1" ><button class="hover:underline cursor-pointer" on:click={() => push(`/artist/${GetPlatformNumber(albumData.platform)}/${albumData.artist_id}`)}>{albumData.artist}</button> • {albumData.year} • {albumData.track_count} Tracks
                     <button class="cursor-pointer self-end" on:click={() => {downloadAlbum(albumData.tracks, GetPlatformNumber(albumData.platform), 0 , albumData.title)}}>
-                    <img src="/download.svg" alt="">
+                    <img height="18px" width="18px" src="/download.svg" alt="">
                   </button>
                 </p>
-                <img on:click={() => {playAlbum(albumData.tracks)}} class="justify-self-end self-end fa-solid fa-circle-play text-5xl mt-3 cursor-pointer text-violet-900 col-start-3" src="/play.svg" alt="">
+                <img on:click={() => {playAlbum(albumData.tracks)}} height="64px" width="64px" class="justify-self-end self-end fa-solid fa-circle-play mt-3 cursor-pointer text-violet-900 col-start-3" src="/play-solid.svg" alt="">
             </div>
         </div>
     </div>

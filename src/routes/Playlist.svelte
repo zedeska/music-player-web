@@ -38,7 +38,7 @@
     <div class="flex flex-row gap-3 border-b-2 border-gray-800 pb-2">
 
         <div class="grid grid-rows-3 p-2 w-full">
-            <h2 class="text-7xl font-bold row-start-2 overflow-hidden text-ellipsis whitespace-nowrap" >{playlistData.name}</h2>
+            <h2 class="text-7xl font-bold row-start-2 overflow-hidden text-ellipsis" >{playlistData.name}</h2>
             <div class="row-start-3 grid grid-cols-3">
                 <div class="self-end flex gap-2">
                     <p class="self-end" > {playlistData.tracks ? playlistData.tracks.length : 0} Tracks</p>
@@ -50,14 +50,14 @@
                                 push("/");
                             }
                         }}>
-                            <img src="/trash-solid.svg" alt="">
+                            <img height="18px" width="18px" src="/trash-solid.svg" alt="">
                         </button>
                         <button class="cursor-pointer" on:click={() => {downloadAlbum(playlistData.tracks, 0, 0, playlistData.name)}}>
-                            <img src="/download.svg" alt="">
+                            <img height="18px" width="18px" src="/download.svg" alt="">
                         </button>
                     </div>
                 </div>
-                <img on:click={() => {playAlbum(playlistData.tracks)}} class="justify-self-end self-end fa-solid fa-circle-play text-5xl mt-3 cursor-pointer text-violet-900 col-start-3" src="/play.svg" alt="">
+                <img on:click={() => {playAlbum(playlistData.tracks)}} height="64px" width="64px" class="justify-self-end self-end fa-solid fa-circle-play mt-3 cursor-pointer text-violet-900 col-start-3" src="/play-solid.svg" alt="">
             </div>
         </div>
     </div>

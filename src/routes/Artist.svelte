@@ -30,7 +30,7 @@
 
         <div class="grid grid-rows-3 p-2">
             <div class="row-start-3 grid grid-cols-3">
-                <h2 class="self-end text-7xl font-bold text-ellipsis text-nowrap">{artistData.name}</h2>
+                <h2 class="self-end text-7xl font-bold overflow-hidden text-ellipsis whitespace-nowrap">{artistData.name}</h2>
             </div>
         </div>
     </div>
