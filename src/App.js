@@ -150,13 +150,15 @@ async function GetTrack(track, platform, quality, token) {
 async function GetAndTagTrack(track, platform, quality, token) {
   try {
     const file = await GetTrack(track, platform, quality, token);
+    const title = track.title.replace("/", "-") || 'Unknown Title';
+    const artist = track.artist.replace("/", "-") || 'Unknown Artist';
     switch (quality) {
       case 2:
         const taggedFile = await TagFlacFile(file, track);
-        return {blob: taggedFile, fileName: `${track.artist} - ${track.title}.flac`};
+        return {blob: taggedFile, fileName: `${artist} - ${title}.flac`};
       case 1:
         const taggedMp3 = await TagMp3File(file, track);
-        return {blob: taggedMp3, fileName: `${track.artist} - ${track.title}.mp3` };
+        return {blob: taggedMp3, fileName: `${artist} - ${title}.mp3` };
     }
   } catch (err) {
     console.error("Error fetching and tagging track:", err);
