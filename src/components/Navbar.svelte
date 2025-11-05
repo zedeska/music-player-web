@@ -32,7 +32,8 @@
         </button>
     </div>
 
-    <div class="justify-self-end col-start-3" >
+    <div class="justify-self-end col-start-3 flex" >
+        <button on:click={() => {window.location.href = "https://ko-fi.com/johnjonnyjohn"}} class="cursor-pointer" ><img src="/heart.svg" alt="" /></button>
         <button class="cursor-pointer" on:click={userMenu.createHandler()} ><img src="/user.svg" alt=""></button>
     </div>
 </nav>
