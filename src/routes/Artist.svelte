@@ -26,11 +26,11 @@
 
 {#if artistData}
 <div class="flex flex-row gap-3 border-b-2 border-gray-800 pb-2">
-        <img src="{artistData.image}" alt="artist-image" class="rounded-full max-w-[200px]" />
+        <img src="{artistData.image}" alt="artist-image" class="max-w-[150px] max-h-[150px] self-end" style="border-radius: 50%;" />
 
         <div class="grid grid-rows-3 p-2">
             <div class="row-start-3 grid grid-cols-3">
-                <h2 class="self-end text-7xl font-bold overflow-hidden text-ellipsis whitespace-nowrap">{artistData.name}</h2>
+                <h2 class="self-end w-max text-7xl font-bold overflow-hidden text-ellipsis whitespace-nowrap">{artistData.name}</h2>
             </div>
         </div>
     </div>

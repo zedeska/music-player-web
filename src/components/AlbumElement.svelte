@@ -16,15 +16,15 @@
 
 </script>
 
-<div class="group ease-in-out transition flex flex-col align-middle items-center rounded-lg p-2 hover:bg-violet-950 gap-2" on:contextmenu={(e) => {
+<div class="group ease-in-out relative transition flex flex-col rounded-lg p-2 hover:bg-violet-950 gap-2 max-w-[120px]" on:contextmenu={(e) => {
     MyMenu.show(e);
   }}>
     <button class="relative cursor-pointer" on:click={() => {push("/album/"+GetPlatformNumber(album.platform)+"/"+album.id)}}>
-        <img class="max-h-[100px] max-w-[100px] relative rounded-lg" src="{album.cover || ''}" alt="">
-        <i class="fa-solid fa-play group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></i>
+        <img class="w-max relative rounded-lg" src="{album.cover || ''}" alt="">
+        <img src="/play-solid.svg" alt="" class="group-hover:visible invisible absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
     </button>
-    <div>
-        <h4>{album.title}</h4>
+    <div class="max-w-max">
+        <h4 class="overflow-hidden text-ellipsis whitespace-nowrap">{album.title}</h4>
         <button class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+GetPlatformNumber(album.platform)+"/"+album.artist_id)}}>{album.artist || 'Unknown'}</button>
     </div>
 </div>
