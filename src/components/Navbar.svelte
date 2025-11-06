@@ -33,7 +33,6 @@
     </div>
 
     <div class="justify-self-end col-start-3 flex" >
-        <button on:click={() => {window.location.href = "https://ko-fi.com/johnjonnyjohn"}} class="cursor-pointer" ><img src="/heart.svg" alt="" /></button>
         <button class="cursor-pointer" on:click={userMenu.createHandler()} ><img src="/user.svg" alt=""></button>
     </div>
 </nav>
@@ -42,5 +41,9 @@
     <img src="/xmark.svg" alt="">
     <Divider />
     <Item on:click={() => push("/profile")} >Profile</Item>
+    <Divider />
+    <Item on:click={() => window.location.href = "https://ko-fi.com/johnjonnyjohn"} >Support</Item>
+    <Item on:click={() => window.location.href = "https://discord.gg/Jr6EMxetNu"} >Discord</Item>
+    <Divider />
     <Item on:click={logout()} >Log out</Item>
 </ContextMenu>
