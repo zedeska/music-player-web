@@ -13,7 +13,7 @@
       <h2>Register to YAMS</h2>
       <input type="text" bind:value={username} placeholder="Username" required />
       <input type="password" bind:value={password} placeholder="Password" required />
-      <button on:click={() => { register = false; username = ""; password = ""; }} class="cursor-pointer text-xs text-violet-950" >Login</button>
+      <button on:click={() => { register = false; username = ""; password = ""; }} class="cursor-pointer text-xs text-violet-800" >Login</button>
       <button class="cursor-pointer" on:click={async () => {
         toast.promise(
             Register(username, password),
@@ -39,7 +39,7 @@
       <h2>Login to YAMS</h2>
       <input type="text" bind:value={username} placeholder="Username" required />
       <input type="password" bind:value={password} placeholder="Password" required />
-      <button on:click={() => { register = true; username = ""; password = ""; }} class="cursor-pointer text-xs text-violet-950">Register</button>
+      <button on:click={() => { register = true; username = ""; password = ""; }} class="cursor-pointer text-xs text-violet-800">Register</button>
       <button class="cursor-pointer" on:click={async () => {
         toast.promise(
             Login(username, password),

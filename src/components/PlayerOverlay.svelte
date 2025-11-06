@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { push } from "svelte-spa-router";
+    import { GetPlatformNumber } from "../App.js";
 
 
     export let currentTrack;
@@ -36,7 +37,10 @@
         <img src="{currentTrack.cover}" alt="{currentTrack.title} cover" class="w-full rounded-lg" />
         <div class="flex flex-col self-start gap-1">
             <p class="text-2xl font-bold">{currentTrack.title}</p>
-            <p class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
+            <p class="text-sm cursor-pointer hover:underline" on:click={() => {
+              open = !open;
+              push("/artist/" + GetPlatformNumber(currentTrack.platform) + "/" + currentTrack.artist_id);
+              }}>{currentTrack.artist || 'Unknown'}</p>
         </div>
     </div>
     

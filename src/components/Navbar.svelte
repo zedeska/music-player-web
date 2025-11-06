@@ -39,10 +39,9 @@
 
 <ContextMenu bind:this={userMenu} >
     <img src="/xmark.svg" alt="">
-    <Divider />
     <Item on:click={() => push("/profile")} >Profile</Item>
     <Divider />
-    <Item on:click={() => window.location.href = "https://ko-fi.com/johnjonnyjohn"} >Support</Item>
+    <Item on:click={() => window.location.href = "https://ko-fi.com/johnjonnyjohn"} >Donation</Item>
     <Item on:click={() => window.location.href = "https://discord.gg/Jr6EMxetNu"} >Discord</Item>
     <Divider />
     <Item on:click={logout()} >Log out</Item>
