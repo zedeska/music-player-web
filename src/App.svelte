@@ -530,7 +530,7 @@
 
   async function downloadTrack(track) {
     toast.promise(
-      DownloadTrack(track, GetPlatformNumber(track.platform), quality, token, trackNameTemplate),
+      DownloadTrack(track, GetPlatformNumber(track.platform), quality, token, trackNameTemplate, albumFolder, albumFolderTemplate),
       {
         loading: 'Downloading...',
         success: 'Downloaded successfully!',

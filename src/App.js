@@ -216,10 +216,27 @@ async function GetAndTagTrack(track, platform, quality, token, trackTemplate) {
   }
 }
 
-export async function DownloadTrack(track, platform, quality, token, trackTemplate) {
+export async function DownloadTrack(track, platform, quality, token, trackTemplate, isSubFolder, subFolderTemplate = "") {
   try {
-    const fileInfo = await GetAndTagTrack(track, platform, quality, token, trackTemplate);
-    saveAs(fileInfo.blob, fileInfo.fileName);
+    if (isSubFolder) {
+      const subFolderName = generateFileName(subFolderTemplate, {
+        artist: track.artist || '',
+        album: track.album || '',
+        year: track.year || ''
+      });
+      var zip = new JSZip();
+      var subFolder = zip.folder(subFolderName);
+
+      const fileInfo = await GetAndTagTrack(track, platform, quality, token, trackTemplate);
+      subFolder.file(fileInfo.fileName, fileInfo.blob);
+      const content = await zip.generateAsync(
+        { type: "blob", streamFiles: true },
+      );
+      saveAs(content, subFolderName + ".zip");
+    } else {
+      const fileInfo = await GetAndTagTrack(track, platform, quality, token, trackTemplate);
+      saveAs(fileInfo.blob, fileInfo.fileName);
+    }
   } catch (error) {
     throw new Error("Download failed: " + error.message);
   }
