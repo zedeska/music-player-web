@@ -147,18 +147,68 @@ async function GetTrack(track, platform, quality, token) {
   }
 }
 
-async function GetAndTagTrack(track, platform, quality, token) {
+function sanitizeForFilename(s) {
+  if (s == null) return '';
+  // replace characters not allowed in filenames, trim, collapse spaces
+  return String(s)
+    .replace(/[/\\?%*:|"<>]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function generateFileName(template, meta = {}) {
+  const tpl = (template && template.length) ? template : '{artist} - {title}';
+  return tpl.replace(/\{([^}]+)\}/g, (match, inner) => {
+    // parse "field:format" and optional "|modifier" like "field:02|upper"
+    let parts = inner.split('|').map(p => p.trim());
+    let fieldPart = parts[0];
+    const mods = parts.slice(1);
+    const [field, fmt] = fieldPart.split(':').map(p => p.trim());
+    let val = meta[field];
+
+    if (val == null) {
+      // fallback to empty string so templates don't get literal "undefined"
+      return '';
+    }
+
+    // numeric zero-padding, only if fmt is digits
+    if (fmt && /^\d+$/.test(fmt)) {
+      const width = parseInt(fmt, 10);
+      const s = String(val);
+      return s.padStart(width, '0');
+    }
+
+    let out = String(val);
+
+    for (const m of mods) {
+      if (m === 'upper') out = out.toUpperCase();
+      else if (m === 'lower') out = out.toLowerCase();
+      // add more modifiers here if needed
+    }
+
+    return sanitizeForFilename(out);
+  });
+}
+
+async function GetAndTagTrack(track, platform, quality, token, trackTemplate) {
   try {
     const file = await GetTrack(track, platform, quality, token);
-    const title = track.title.replace("/", "-") || 'Unknown Title';
-    const artist = track.artist.replace("/", "-") || 'Unknown Artist';
+    const meta = {
+      artist: track.artist || '',
+      title: track.title || '',
+      album: track.album || '',
+      year: track.year || '',
+      disc: track.disc || '',
+      tracknumber: track.media_count || '',
+      position: track.media_count || ''
+    };
     switch (quality) {
       case 2:
         const taggedFile = await TagFlacFile(file, track);
-        return {blob: taggedFile, fileName: `${artist} - ${title}.flac`};
+        return {blob: taggedFile, fileName: generateFileName(trackTemplate, meta)+".flac"};
       case 1:
         const taggedMp3 = await TagMp3File(file, track);
-        return {blob: taggedMp3, fileName: `${artist} - ${title}.mp3` };
+        return {blob: taggedMp3, fileName: generateFileName(trackTemplate, meta)+".mp3"};
     }
   } catch (err) {
     console.error("Error fetching and tagging track:", err);
@@ -166,39 +216,69 @@ async function GetAndTagTrack(track, platform, quality, token) {
   }
 }
 
-export async function DownloadTrack(track, platform, quality, token) {
+export async function DownloadTrack(track, platform, quality, token, trackTemplate) {
   try {
-    const fileInfo = await GetAndTagTrack(track, platform, quality, token);
+    const fileInfo = await GetAndTagTrack(track, platform, quality, token, trackTemplate);
     saveAs(fileInfo.blob, fileInfo.fileName);
   } catch (error) {
     throw new Error("Download failed: " + error.message);
   }
 }
 
-export async function DownloadMultipleTracks(tracks, platform, quality, token, album, maxConcurrent = 3) {
+export async function DownloadMultipleTracks(tracks, quality, token, zipName, trackTemplate, subFolderTemplate, isSubFolder, isAlbum, maxConcurrent = 3) {
   const results = [];
   const executing = new Set();
   var zip = new JSZip();
-  var albumF = zip.folder(album);
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  for (const track of tracks) {
-    const filePromise = GetAndTagTrack(track, platform, quality, token);
-    executing.add(filePromise);
-    filePromise.finally(() => executing.delete(filePromise));
-    results.push(
-      filePromise.then(taggedBlob => {
-        albumF.file(taggedBlob.fileName, taggedBlob.blob);
-      })
-    );
-
-    if (executing.size >= maxConcurrent) {
-      await Promise.race(executing);
+  if (isSubFolder) {
+    var subFolderF;
+    if (isAlbum) {
+      const firstTrack = tracks[0];
+      subFolderF = zip.folder(generateFileName(subFolderTemplate, {
+        artist: firstTrack.artist || '',
+        album: firstTrack.album || '',
+        year: firstTrack.year || ''
+      }));
+    } else {
+      subFolderF = zip.folder(generateFileName(subFolderTemplate, {
+        playlist: zipName || 'Playlist'
+      }));
     }
+    for (const track of tracks) {
+      const filePromise = GetAndTagTrack(track, GetPlatformNumber(track.platform), quality, token, trackTemplate);
+      executing.add(filePromise);
+      filePromise.finally(() => executing.delete(filePromise));
+      results.push(
+        filePromise.then(taggedBlob => {
+        subFolderF.file(taggedBlob.fileName, taggedBlob.blob);
+        })
+      );
+      if (executing.size >= maxConcurrent) {
+        await Promise.race(executing);
+      }
 
-    // small awaited pause to avoid tight loop
-    await sleep(150);
+      // small awaited pause to avoid tight loop
+      await sleep(150);
+    }
+  } else {
+    for (const track of tracks) {
+      const filePromise = GetAndTagTrack(track, GetPlatformNumber(track.platform), quality, token, trackTemplate);
+      executing.add(filePromise);
+      filePromise.finally(() => executing.delete(filePromise));
+      results.push(
+        filePromise.then(taggedBlob => {
+        zip.file(taggedBlob.fileName, taggedBlob.blob);
+        })
+      );
+      if (executing.size >= maxConcurrent) {
+        await Promise.race(executing);
+      }
+
+      // small awaited pause to avoid tight loop
+      await sleep(150);
+    }
   }
 
   await Promise.allSettled(results);
@@ -208,7 +288,7 @@ export async function DownloadMultipleTracks(tracks, platform, quality, token, a
     { type: "blob", streamFiles: true },
   );
 
-  saveAs(content, album + ".zip");
+  saveAs(content, zipName + ".zip");
 }
 
 export async function Login(username, password) {

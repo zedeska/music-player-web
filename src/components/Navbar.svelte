@@ -26,7 +26,7 @@
     </div>
     <div class="flex justify-self-center col-start-2 gap-2 items-center">
     <img on:click={() => {push("/")}} class="cursor-pointer" src="/home.svg" alt="" />
-    <input bind:value={query} type="text" placeholder="Search for music..." on:keyup={handleKeydown} class="focus:border-violet-900 border-b-2 border-transparent hover:border-violet-900 ease-in-out transition-all duration-200" />
+    <input bind:value={query} type="text" placeholder="Search for music..." on:keyup={handleKeydown} class="focus:border-violet-900 border-b-2 border-transparent hover:border-violet-900 ease-in-out transition-all duration-200 focus:outline-none" />
         <button on:click={() => {push("/search/"+query)}} class="cursor-pointer">
             <img src="/search.svg" alt="">
         </button>

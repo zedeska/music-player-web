@@ -6,7 +6,14 @@
   //export let userToken;
   
   export let getSetQuality;
-  
+  export let getSetTrackNameTemplate;
+  export let getSetAlbumTrackNameTemplate;
+  export let getSetPlaylistTrackNameTemplate;
+  export let getSetPlaylistFolder;
+  export let getSetAlbumFolder;
+  export let getSetPlaylistFolderTemplate;
+  export let getSetAlbumFolderTemplate;
+
   let fileInput;
   let selectedFiles = null;
   let uploading = false;
@@ -14,7 +21,15 @@
   let errors = [];
   let successMessage = '';
   let addMusic = false;
+
   let quality;
+  let tracknameTemplate;
+  let albumTrackNameTemplate;
+  let playlistTrackNameTemplate;
+  let playlistFolder;
+  let albumFolder;
+  let playlistFolderTemplate;
+  let albumFolderTemplate;
 
   /*
   function handleFileSelect(event) {
@@ -70,14 +85,21 @@
 
   onMount(() => {
     quality = getSetQuality();
+    tracknameTemplate = getSetTrackNameTemplate();
+    albumTrackNameTemplate = getSetAlbumTrackNameTemplate();
+    playlistTrackNameTemplate = getSetPlaylistTrackNameTemplate();
+    playlistFolder = getSetPlaylistFolder();
+    albumFolder = getSetAlbumFolder();
+    playlistFolderTemplate = getSetPlaylistFolderTemplate();
+    albumFolderTemplate = getSetAlbumFolderTemplate();
   });
 
 </script>
 
 <div>
-  <h1 class="text-3xl mb-3">Settings</h1>
+  <h1 class="text-3xl mb-3 text-center">Settings</h1>
   <div class="mb-6">
-    <label for="quality" class="block text-sm font-medium mb-2">Streaming Quality:</label>
+    <h2 class="text-lg font-semibold">Audio Quality</h2>
     <select
       id="quality"
       bind:value={quality}
@@ -90,6 +112,95 @@
       <option value={1}>320kbps MP3 (High quality)</option>
       <option value={2}>CD-Lossless (16bit / 44.1 kHz FLAC)</option>
     </select>
+
+    <h2 class="text-lg font-semibold mt-6">Templates</h2>
+    <label for="trackname" class="block font-medium mb-2">Track name template :</label>
+    <input type="text" name="trackname" bind:value={tracknameTemplate} on:change={() => {
+        getSetTrackNameTemplate(tracknameTemplate);
+        toast.success('Track name template updated.');
+      }} class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm bg-black text-white">
+    <details>
+      <summary>
+        Available variables
+      </summary>
+      <ul class="list-disc list-inside">
+        <li> &lbrace;artist&rcub; - Artist name</li>
+        <li>&lbrace;title&rcub; - Track title</li>
+        <li>&lbrace;album&rcub; - Album name</li>
+        <li>&lbrace;year&rcub; - Release year</li>
+      </ul>
+    </details>
+
+    <br>
+
+    <label for="albumtrackname" class="block font-medium mb-2">Album track template :</label>
+    <input type="text" name="albumtrackname" bind:value={albumTrackNameTemplate} on:change={() => {
+        getSetAlbumTrackNameTemplate(albumTrackNameTemplate);
+        toast.success('Album track template updated.');
+      }} class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm bg-black text-white">
+    <details>
+      <summary>
+        Available variables
+      </summary>
+      <ul class="list-disc list-inside">
+        <li> &lbrace;artist&rcub; - Artist name</li>
+        <li>&lbrace;title&rcub; - Track title</li>
+        <li>&lbrace;album&rcub; - Album name</li>
+        <li>&lbrace;year&rcub; - Release year</li>
+        <li>&lbrace;tracknumber&rcub; - Track number</li>
+      </ul>
+    </details>
+
+    <br>
+
+    <label for="playlisttrackname" class="block font-medium mb-2">Playlist track template :</label>
+    <input type="text" name="playlisttrackname" bind:value={playlistTrackNameTemplate} on:change={() => {
+        getSetPlaylistTrackNameTemplate(playlistTrackNameTemplate);
+        toast.success('Playlist track template updated.');
+      }} class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm bg-black text-white">
+    <details>
+      <summary>
+        Available variables
+      </summary>
+      <ul class="list-disc list-inside">
+        <li> &lbrace;artist&rcub; - Artist name</li>
+        <li>&lbrace;title&rcub; - Track title</li>
+        <li>&lbrace;album&rcub; - Album name</li>
+        <li>&lbrace;year&rcub; - Release year</li>
+        <li>&lbrace;position&rcub; - Track position</li>
+      </ul>
+    </details>
+
+
+    <h2 class="text-lg font-semibold mt-6">Folders</h2>
+    <label class="block font-medium mb-2">
+      <input type="checkbox" bind:checked={playlistFolder} on:change={() => {
+          getSetPlaylistFolder(playlistFolder);
+          toast.success('Playlist folder setting updated.');
+        }}>
+      Create playlist folders
+    </label>
+    <label for="playlistfoldername" class="block font-medium mb-2">Playlist folder template :</label>
+    <input type="text" name="playlistfoldername" bind:value={playlistFolderTemplate} on:change={() => {
+        getSetPlaylistFolderTemplate(playlistFolderTemplate);
+        toast.success('Playlist folder template updated.');
+      }} class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm bg-black text-white">
+
+    <br>
+
+    <label class="block font-medium mb-2">
+      <input type="checkbox" bind:checked={albumFolder} on:change={() => {
+          getSetAlbumFolder(albumFolder);
+          toast.success('Album folder setting updated.');
+        }}>
+      Create album folders
+    </label>
+    <label for="albumfoldername" class="block font-medium mb-2">Album folder template :</label>
+    <input type="text" name="albumfoldername" bind:value={albumFolderTemplate} on:change={() => {
+        getSetAlbumFolderTemplate(albumFolderTemplate);
+        toast.success('Album folder template updated.');
+      }} class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-violet-500 focus:border-violet-500 sm:text-sm bg-black text-white">
+
   </div>
 </div>
 <!--

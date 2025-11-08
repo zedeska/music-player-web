@@ -41,6 +41,13 @@
   let queueOverlay = false;
   let innerWidth = 1920;
   let quality = 2;
+  let trackNameTemplate = "{artist} - {title}";
+  let albumTrackNameTemplate = "{tracknumber}. {artist} - {title}";
+  let playlistTrackNameTemplate = "{position}. {artist} - {title}";
+  let playlistFolderTemplate = "{playlist}";
+  let albumFolderTemplate = "{artist} - {album} ({year})";
+  let playlistFolder = true;
+  let albumFolder = true;
 
   let queue = [];
 
@@ -101,7 +108,7 @@
       props: { 
         downloadTrack,
         playAlbum,
-        downloadAlbum,
+        downloadPlaylist,
         addToQueue,
         getUsersPlaylists,
         addTrackToPlaylist,
@@ -113,7 +120,14 @@
       component: Profile,
       props: { 
         userToken: token,
-        getSetQuality
+        getSetQuality,
+        getSetTrackNameTemplate,
+        getSetAlbumTrackNameTemplate,
+        getSetPlaylistTrackNameTemplate,
+        getSetPlaylistFolder,
+        getSetAlbumFolder,
+        getSetPlaylistFolderTemplate,
+        getSetAlbumFolderTemplate
       }
     })
   };
@@ -130,7 +144,70 @@
       return quality;
     }
   }
-  
+
+  function getSetTrackNameTemplate(paramTemplate = null) {
+    if (paramTemplate !== null) {
+      trackNameTemplate = paramTemplate;
+      localStorage.setItem('trackNameTemplate', trackNameTemplate);
+    } else {
+      return trackNameTemplate;
+    }
+  }
+
+  function getSetAlbumTrackNameTemplate(paramTemplate = null) {
+    if (paramTemplate !== null) {
+      albumTrackNameTemplate = paramTemplate;
+      localStorage.setItem('albumTrackNameTemplate', albumTrackNameTemplate);
+    } else {
+      return albumTrackNameTemplate;
+    }
+  }
+
+  function getSetPlaylistTrackNameTemplate(paramTemplate = null) {
+    if (paramTemplate !== null) {
+      playlistTrackNameTemplate = paramTemplate;
+      localStorage.setItem('playlistTrackNameTemplate', playlistTrackNameTemplate);
+    } else {
+      return playlistTrackNameTemplate;
+    }
+  }
+
+  function getSetPlaylistFolder(paramBool = null) {
+    if (paramBool !== null) {
+      playlistFolder = paramBool;
+      localStorage.setItem('playlistFolder', String(playlistFolder));
+    } else {
+      return playlistFolder;
+    }
+  }
+
+  function getSetAlbumFolder(paramBool = null) {
+    if (paramBool !== null) {
+      albumFolder = paramBool;
+      localStorage.setItem('albumFolder', String(albumFolder));
+    } else {
+      return albumFolder;
+    }
+  }
+
+  function getSetPlaylistFolderTemplate(paramTemplate = null) {
+    if (paramTemplate !== null) {
+      playlistFolderTemplate = paramTemplate;
+      localStorage.setItem('playlistFolderTemplate', playlistFolderTemplate);
+    } else {
+      return playlistFolderTemplate;
+    }
+  }
+
+  function getSetAlbumFolderTemplate(paramTemplate = null) {
+    if (paramTemplate !== null) {
+      albumFolderTemplate = paramTemplate;
+      localStorage.setItem('albumFolderTemplate', albumFolderTemplate);
+    } else {
+      return albumFolderTemplate;
+    }
+  }
+
   function getToken() {
     return token;
   }
@@ -283,7 +360,7 @@
   }
 
   async function init(track) {
-    currentAudioTrack.remove();
+    delete(currentAudioTrack.src);
     const audioUrl = `${SERVER}play?id=${track.id}&token=${token}&p=${GetPlatformNumber(track.platform)}&q=${quality}`;
     
     // Show loading state
@@ -453,7 +530,7 @@
 
   async function downloadTrack(track) {
     toast.promise(
-      DownloadTrack(track, GetPlatformNumber(track.platform), quality, token),
+      DownloadTrack(track, GetPlatformNumber(track.platform), quality, token, trackNameTemplate),
       {
         loading: 'Downloading...',
         success: 'Downloaded successfully!',
@@ -471,7 +548,18 @@
       album = album_data.title;
     }
     toast.promise(
-      DownloadMultipleTracks(tracks, platform, quality, token, album),
+      DownloadMultipleTracks(tracks, quality, token, album, albumTrackNameTemplate, albumFolderTemplate, albumFolder, true),
+      {
+        loading: `Downloading...`,
+        success: `Downloaded successfully!`,
+        error: (error) => { return error; },
+      }
+    );
+}
+
+  async function downloadPlaylist(tracks, playlist) {
+    toast.promise(
+      DownloadMultipleTracks(tracks, quality, token, playlist, playlistTrackNameTemplate, playlistFolderTemplate, playlistFolder, false),
       {
         loading: `Downloading...`,
         success: `Downloaded successfully!`,
@@ -520,13 +608,57 @@
     if (localStorage.getItem('volume')) {
       volume = Number(localStorage.getItem('volume'));
     }
+
     if (localStorage.getItem('token')) {
       token = localStorage.getItem('token');
     }
+
     if (localStorage.getItem('quality')) {
       quality = Number(localStorage.getItem('quality'));
     } else {
       localStorage.setItem('quality', String(quality));
+    }
+
+    if (localStorage.getItem('trackNameTemplate')) {
+      trackNameTemplate = localStorage.getItem('trackNameTemplate');
+    } else {
+      localStorage.setItem('trackNameTemplate', trackNameTemplate);
+    }
+
+    if (localStorage.getItem('albumTrackNameTemplate')) {
+      albumTrackNameTemplate = localStorage.getItem('albumTrackNameTemplate');
+    } else {
+      localStorage.setItem('albumTrackNameTemplate', albumTrackNameTemplate);
+    }
+
+    if (localStorage.getItem('playlistTrackNameTemplate')) {
+      playlistTrackNameTemplate = localStorage.getItem('playlistTrackNameTemplate');
+    } else {
+      localStorage.setItem('playlistTrackNameTemplate', playlistTrackNameTemplate);
+    }
+
+    if (localStorage.getItem('playlistFolder')) {
+      playlistFolder = localStorage.getItem('playlistFolder') === 'true';
+    } else {
+      localStorage.setItem('playlistFolder', String(playlistFolder));
+    }
+
+    if (localStorage.getItem('albumFolder')) {
+      albumFolder = localStorage.getItem('albumFolder') === 'true';
+    } else {
+      localStorage.setItem('albumFolder', String(albumFolder));
+    }
+
+    if (localStorage.getItem('playlistFolderTemplate')) {
+      playlistFolderTemplate = localStorage.getItem('playlistFolderTemplate');
+    } else {
+      localStorage.setItem('playlistFolderTemplate', playlistFolderTemplate);
+    }
+
+    if (localStorage.getItem('albumFolderTemplate')) {
+      albumFolderTemplate = localStorage.getItem('albumFolderTemplate');
+    } else {
+      localStorage.setItem('albumFolderTemplate', albumFolderTemplate);
     }
 
     // ensure overlays are closed on fresh load (works around cached DOM / SW hydration)

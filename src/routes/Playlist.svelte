@@ -1,5 +1,5 @@
 <script>
-  import { GetPlaylist } from "../App.js";
+  import { GetPlaylist, GetPlatformNumber } from "../App.js";
   import toast from "svelte-french-toast";
   import TrackElement from "../components/TrackElement.svelte";
   import { push } from "svelte-spa-router";
@@ -7,7 +7,7 @@
     export let params;
     export let downloadTrack;
     export let playAlbum;
-    export let downloadAlbum;
+    export let downloadPlaylist;
     export let addToQueue;
     export let getUsersPlaylists;
     export let addTrackToPlaylist;
@@ -52,7 +52,7 @@
                         }}>
                             <img height="18px" width="18px" src="/trash-solid.svg" alt="">
                         </button>
-                        <button class="cursor-pointer" on:click={() => {downloadAlbum(playlistData.tracks, 0, 0, playlistData.name)}}>
+                        <button class="cursor-pointer" on:click={() => {downloadPlaylist(playlistData.tracks, playlistData.name)}}>
                             <img height="18px" width="18px" src="/download.svg" alt="">
                         </button>
                     </div>
