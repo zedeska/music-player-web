@@ -359,6 +359,10 @@
     }
   }
 
+  function deleteFromQueue(track) {
+    queue = queue.filter(item => item.track.id !== track.id || item.track.platform !== track.platform);
+  }
+
   async function init(track) {
     delete(currentAudioTrack.src);
     const audioUrl = `${SERVER}play?id=${track.id}&token=${token}&p=${GetPlatformNumber(track.platform)}&q=${quality}`;
@@ -475,7 +479,7 @@
 
   // Update audio volume when slider changes
   function updateVolume() {
-    currentAudioTrack.volume = volume / 100;
+    if (!muted) currentAudioTrack.volume = volume / 100;
     localStorage.setItem('volume', String(volume));
     
     // Update CSS custom property for volume slider fill
@@ -680,9 +684,9 @@
 
   <div class="h-screen w-full">
     <div class="h-full w-full flex flex-col absolute overflow-hidden">
-    <aside class="queue-overlay absolute h-full w-full z-150 bg-black p-2" class:open={queueOverlay} >
+    <aside class="queue-overlay absolute h-full w-full z-150 bg-black p-2 overflow-y-scroll" class:open={queueOverlay} >
       <button class="text-xl cursor-pointer" on:click={() => {queueOverlay = false;}}><img src="/xmark.svg" alt=""></button>
-      <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
+      <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} {deleteFromQueue} />
     </aside>
 
     <PlayerOverlay {paused} bind:open={overlay} bind:openQueue={queueOverlay} {loop} {changeLoop} {shuffle} {currentTrack} {currentAudioTrack} {formatTime} bind:currentTime {duration} bind:isTrackLoading {playPreviousTrack} {playAndPause} {playNextTrack} {updateCurrentTime} {updateVolume} />
@@ -700,7 +704,7 @@
       </div>
       
       <div class="hidden md:block col-start-5 overflow-y-scroll h-full border-gray-800 border-2 rounded-lg">
-        <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} />
+        <RightPanel bind:queue {init} {currentTrack} {downloadTrack} {addToQueue} {addTrackToPlaylist} {getUsersPlaylists} {deleteFromQueue} />
       </div>
     </div>
 

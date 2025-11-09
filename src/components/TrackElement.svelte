@@ -6,6 +6,7 @@
 
     let playlists;
     let addingToPlaylist = false;
+    let innerWidth;
 
     export let track;
     export let init = (...args) => {};
@@ -16,6 +17,8 @@
     export let tracksData = {};
     export let playAlbum = (...args) => {};
     export let active = false;
+    export let queue = false;
+    export let deleteFromQueue = (...args) => {};
 
     export let deleteTrackFromPlaylist = (...args) => {};
     export let playlistID = 0;
@@ -23,8 +26,10 @@
     export let numbered = false;
 </script>
 
+<svelte:window bind:innerWidth />
+
 <div class="group ease-in-out transition flex flex-row align-middle items-center rounded-lg p-2 gap-2 justify-between max-w-full" class:bg-violet-950={active} class:hover:bg-violet-950={!active} on:contextmenu={(e) => {
-    MyMenu.show(e);
+    if (!queue) MyMenu.show(e);
   }}>
     <div class="flex items-center gap-2 flex-row truncate">
         {#if numbered}
@@ -43,9 +48,16 @@
             <button class="text-sm cursor-pointer hover:underline" on:click={() => {push("/artist/"+GetPlatformNumber(track.platform)+"/"+track.artist_id)}}>{track.artist || 'Unknown'}</button>
         </div> 
     </div>
-    <div class="flex gap-2">
-        <p>{Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}</p>
-    </div>
+    {#if queue}
+        <button class="cursor-pointer" on:click={() => {deleteFromQueue(track)}}>
+            <img src="/xmark.svg" alt="">
+        </button>
+    {:else}
+        <div class="flex gap-2">
+            <p>{Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}</p>
+            <button class="cursor-pointer md:hidden" on:click={MyMenu.createHandler()}><img src="/more-vert.svg" alt=""></button>
+        </div>
+    {/if}
 </div>
 
 <ContextMenu bind:this={MyMenu}>

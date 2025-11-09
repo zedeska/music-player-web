@@ -67,7 +67,7 @@
     
     <!-- Volume Control -->
     <div class="hidden md:flex items-center gap-2 col-start-6 justify-self-end">
-        <img src={muted ? '/sound-off-solid.svg' : '/sound-high-solid.svg'} alt="" class="cursor-pointer" on:click={muteUnmute} />
+        <img src={muted ? '/sound-off-solid.svg' : volume === 0 ? '/sound-off-solid.svg' : volume <= 50 ? '/sound-low-solid.svg' :  volume > 50 ? '/sound-high-solid.svg' : ''} alt="" class="cursor-pointer" on:click={muteUnmute} />
         <input 
         type="range" 
         min="0" 
