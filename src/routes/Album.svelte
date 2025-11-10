@@ -14,6 +14,7 @@
     export let fetchAlbum;
 
     let albumData;
+    let selectedTracks = [];
 
     onMount(async () => {
       if (params.id) {
@@ -22,6 +23,7 @@
     });
 </script>
 
+<div>
 {#if albumData}
     <div class="flex items-center md:flex-row flex-col md:gap-3 gap-1 border-b-2 border-gray-800 pb-2">
         <img src="{albumData.cover}" alt="album-cover" class="md:h-[230px] md:w-[230px] h-[170px] w-[170px] rounded-lg" />
@@ -40,9 +42,19 @@
         </div>
     </div>
 
+    {#if selectedTracks.length > 0}
+    <div class="left-0 bg-black p-4 border-t-2 border-gray-800 flex justify-between items-center">
+        <p>{selectedTracks.length} track{selectedTracks.length > 1 ? 's' : ''} selected</p>
+        <button class="bg-violet-950 hover:bg-violet-800 text-white font-bold py-2 px-4 rounded cursor-pointer" on:click={() => {
+            downloadAlbum(selectedTracks, GetPlatformNumber(albumData.platform), 0, albumData.title);
+        }}>Download Selected</button>
+    </div>
+  {/if}
+
     <div>
         {#each albumData.tracks as track}
-            <TrackElement {track} {downloadTrack} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} tracksData={albumData.tracks} {playAlbum} numbered={true}></TrackElement>
+            <TrackElement {track} {downloadTrack} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} tracksData={albumData.tracks} {playAlbum} album={true} bind:selectedTracks></TrackElement>
         {/each}
     </div>
 {/if}
+</div>

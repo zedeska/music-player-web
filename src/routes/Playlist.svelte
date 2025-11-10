@@ -65,7 +65,7 @@
     <div>
         {#if playlistData.tracks}
           {#each playlistData.tracks as track}
-              <TrackElement {track} {downloadTrack} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} tracksData={playlistData.tracks} {playAlbum} {deleteTrackFromPlaylist} playlistID={playlistData.id} numbered={true}></TrackElement>
+              <TrackElement {track} {downloadTrack} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} tracksData={playlistData.tracks} {playAlbum} {deleteTrackFromPlaylist} playlistID={playlistData.id} album={true}></TrackElement>
           {/each}
         {/if}
     </div>
