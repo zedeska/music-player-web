@@ -29,21 +29,21 @@
     });
  </script>
  
- <div class="music-control w-full bg-black grid grid-cols-6 items-center p-1 min-h-[72px]" on:click={() => {
+ <div class="music-control w-full bg-black grid grid-cols-6 items-center p-1 max-h-[72px]" on:click={() => {
     if (innerWidth < 768) {
         open = true;
     }
     }}>
 
     {#if currentTrack}
-    <div class="flex flex-row items-center md:col-span-1 col-span-3 col-start-1 gap-2 justify-self-start">
+    <div class="flex flex-row items-center md:col-span-1 col-span-3 col-start-1 gap-2 justify-self-start overflow-hidden">
         <img src="{currentTrack.cover}" alt="{currentTrack.title} cover" class="h-16 w-16 rounded-lg" />
-        <div class="w-full overflow-hidden flex flex-col">
-        <p class="text-sm font-semibold md:text-base truncate">{currentTrack.title}</p>
+        <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+        <p class="text-sm font-semibold md:text-base multiline-clamp">{currentTrack.title}</p>
         <p class="md:text-sm text-xs cursor-pointer hover:underline w-fit" on:click|stopPropagation={() => {push("/artist/"+GetPlatformNumber(currentTrack.platform)+"/"+currentTrack.artist_id)}}>{currentTrack.artist || 'Unknown'}</p>
-        </div>
     </div>
-    {/if}
+  </div>
+  {/if}
 
     <div class="items-center flex flex-col w-1/2 md:col-span-4 md:col-start-2 col-start-6 md:justify-self-center">
       <div class="flex items-center gap-4 justify-center">
@@ -81,6 +81,16 @@
 </div>
 
 <style>
+  /* limit title to two lines and hide overflow to prevent height growth */
+  .multiline-clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    max-height: 3rem;
+    overflow: hidden;
+    word-break: break-word;
+  }
   /* Custom volume slider styling */
   .volume-slider {
     -webkit-appearance: none;

@@ -55,7 +55,7 @@
     {:else}
         <div class="flex gap-2">
             <p>{Math.floor(track.duration / 60)}:{(track.duration % 60).toString().padStart(2, '0')}</p>
-            <button class="cursor-pointer md:hidden" on:click={MyMenu.createHandler()}><img src="/more-vert.svg" alt=""></button>
+            <button class="cursor-pointer md:hidden" on:click={MyMenu.createHandler()}><img class="min-w-[18px]" height="18px" width="18px" src="/more-vert.svg" alt=""></button>
         </div>
     {/if}
 </div>
