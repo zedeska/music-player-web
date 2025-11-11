@@ -58,7 +58,7 @@
             {#if album}
             <label for="track-{track.id}">
             <div class="grid items-center justify-center">
-                <input id="track-{track.id}" class="group-hover:block peer col-start-1 row-start-1 h-4 w-4 appearance-none rounded border border-gray-300 ring-transparent checked:border-violet-600 checked:bg-violet-600 dark:border-gray-600 dark:checked:border-violet-600 forced-colors:appearance-auto" class:block={selectedTracks.length>0} class:hidden={selectedTracks.length===0} type="checkbox" checked={selectedTracks.includes(track)} on:change={() => {
+                <input id="track-{track.id}" class="group-hover:block peer col-start-1 row-start-1 h-4 w-4 appearance-none rounded border border-gray-300 ring-transparent checked:border-violet-600 checked:bg-violet-600 dark:border-gray-600 dark:checked:border-violet-600 forced-colors:appearance-auto" class:block={selectedTracks.length>0 || innerWidth < 768} class:hidden={selectedTracks.length===0 && innerWidth >= 768} type="checkbox" checked={selectedTracks.includes(track)} on:change={() => {
                     if (selectedTracks.includes(track)) {
                         selectedTracks = selectedTracks.filter(item => item != track);
                     } else {
