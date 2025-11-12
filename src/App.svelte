@@ -374,7 +374,7 @@
        // Validate audio source
       await ValidateAudioSource(audioUrl);
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message);
       isTrackLoading = false;
       return;
     }
@@ -538,7 +538,7 @@
       {
         loading: 'Downloading...',
         success: 'Downloaded successfully!',
-        error: (error) => { return error; },
+        error: (error) => { return error.message; },
       }
     );
   }
@@ -556,7 +556,7 @@
       {
         loading: `Downloading...`,
         success: `Downloaded successfully!`,
-        error: (error) => { return error; },
+        error: (error) => { return error.message; },
       }
     );
 }
@@ -567,7 +567,7 @@
       {
         loading: `Downloading...`,
         success: `Downloaded successfully!`,
-        error: (error) => { return error; },
+        error: (error) => { return error.message; },
       }
     );
 }

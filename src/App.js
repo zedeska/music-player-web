@@ -125,7 +125,7 @@ async function GetTrack(track, platform, quality, token) {
 async function GetTrack(track, platform, quality, token) {
   const url = `${SERVER}play?id=${track.id}&token=${token}&p=${platform}&q=${quality}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Download failed");
+  if (!res.ok) throw new Error("Could not fetch track");
 
   if (res.body && res.body.getReader) {
     const reader = res.body.getReader();
@@ -211,8 +211,7 @@ async function GetAndTagTrack(track, platform, quality, token, trackTemplate) {
         return {blob: taggedMp3, fileName: generateFileName(trackTemplate, meta)+".mp3"};
     }
   } catch (err) {
-    console.error("Error fetching and tagging track:", err);
-    throw new Error("Download failed: " + err.message);
+    throw new Error(err.message);
   }
 }
 
@@ -330,23 +329,19 @@ export async function Register(username, password) {
 
 export async function ValidateAudioSource(url) {
   try {
-    const res = await axios.head(url);
+    const res = await axios.head(url, { validateStatus: () => true, timeout: 10000 });
 
-    switch (res.status) {
-      case 200:
-        return;
-      case 400:
-      case 404:
-        throw new Error("Could not cache this track, please try again later");
-      case 401:
-        throw new Error("Unauthorized access. Please try to log in again.");
-      case 500:
-        throw new Error("Internal server error.");
-      default:
-        throw new Error("Unexpected status code: " + res.status);
-    }
+    if (res.status >= 200 && res.status < 300) return;
+
+    if (res.status === 404) throw new Error("Audio source not found (404).");
+    if (res.status === 400 || res.status === 401) throw new Error("Unauthorized or bad request.");
+    if (res.status >= 500) throw new Error(`Server error (${res.status}).`);
+
+    throw new Error("Request failed with status " + res.status);
   } catch (err) {
-    throw new Error("Error: " + err.message);
+    // network/CORS or no usable response from server
+    if (err && err.request && !err.response) throw new Error("No response from server (network/CORS).");
+    throw err;
   }
 }
 
