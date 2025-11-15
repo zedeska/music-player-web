@@ -13,6 +13,7 @@
     export let addAlbumToQueue;
     export let addAlbumToPlaylist;
     export let fetchArtist;
+    export let init;
 
     let artistData = null;
 
@@ -41,7 +42,7 @@
             <p>No top tracks available.</p>
         {:else}
             {#each artistData.top_tracks as track}
-                <TrackElement {track} {downloadTrack} {playAlbum} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} numbered={true} tracksData={artistData.top_tracks} />
+                <TrackElement {init} {track} {downloadTrack} {playAlbum} {addToQueue} {getUsersPlaylists} {addTrackToPlaylist} album={false} tracksData={artistData.top_tracks} />
             {/each}
         {/if}
     </div>

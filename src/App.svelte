@@ -100,7 +100,8 @@
         downloadAlbum,
         addAlbumToPlaylist,
         addAlbumToQueue,
-        fetchArtist
+        fetchArtist,
+        init
       }
     }),
     "/playlist/:id": wrap({
