@@ -382,7 +382,18 @@
 
     currentTrack = track;
     addToQueue(track);
-    
+
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: track.title,
+        artist: track.artist,
+        album: track.album,
+        artwork: [
+          { src: track.cover, sizes: '1000x1000', type: 'image/jpeg' }
+        ]
+      });
+    }
+
     // If valid, set source and play
     currentAudioTrack.src = audioUrl;
     currentAudioTrack.play();
@@ -665,6 +676,11 @@
     } else {
       localStorage.setItem('albumFolderTemplate', albumFolderTemplate);
     }
+
+    navigator.mediaSession.setActionHandler('play', () => playAndPause());
+    navigator.mediaSession.setActionHandler('pause', () => playAndPause());
+    navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack());
+    navigator.mediaSession.setActionHandler('previoustrack', () => playPreviousTrack());
 
     // ensure overlays are closed on fresh load (works around cached DOM / SW hydration)
     overlay = false;
