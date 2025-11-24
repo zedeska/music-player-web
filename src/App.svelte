@@ -20,7 +20,6 @@
   import Playlist from './routes/Playlist.svelte';
   import Profile from './routes/Profile.svelte';
   import { onMount } from 'svelte';
-  import {init as initPlausible} from '@plausible-analytics/tracker'
 
   const SERVER = "https://api.yams.tf/";
 
@@ -132,10 +131,6 @@
       }
     })
   };
-
-  initPlausible({
-    domain: 'yams.tf'
-  });
 
   function getSetQuality(paramQuality = null) {
     if (paramQuality !== null) {

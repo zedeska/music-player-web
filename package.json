@@ -15,7 +15,6 @@
     "vite-plugin-pwa": "^1.1.0"
   },
   "dependencies": {
-    "@plausible-analytics/tracker": "^0.4.3",
     "@tailwindcss/postcss": "^4.1.11",
     "axios": "^1.12.2",
     "browser-id3-writer": "^6.3.1",
