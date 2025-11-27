@@ -12,6 +12,16 @@ preloadWorkerAndWASM();
 
 // ------------------ API FUNCTIONS ------------------ //
 
+export async function DisableQobuzSearch(token, enable) {
+  const res = await axios.post(SERVER + "admin/toogle-qobuz-search", { token: token, enable: enable });
+  return res.data;
+}
+
+export async function DisableDeezerSearch(token, enable) {
+  const res = await axios.post(SERVER + "admin/toogle-deezer-search", { token: token, enable: enable });
+  return res.data;
+}
+
 export async function Search(query) {
   const res = await axios.get(SERVER + "search", { params: { query } });
   return res.data;

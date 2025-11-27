@@ -19,6 +19,7 @@
   import Artist from './routes/Artist.svelte';
   import Playlist from './routes/Playlist.svelte';
   import Profile from './routes/Profile.svelte';
+  import ControlPanel from './routes/ControlPanel.svelte';
   import { onMount } from 'svelte';
 
   const SERVER = "https://api.yams.tf/";
@@ -128,6 +129,12 @@
         getSetAlbumFolder,
         getSetPlaylistFolderTemplate,
         getSetAlbumFolderTemplate
+      }
+    }),
+    "/control-panel": wrap({
+      component: ControlPanel,
+      props: { 
+        getToken
       }
     })
   };
