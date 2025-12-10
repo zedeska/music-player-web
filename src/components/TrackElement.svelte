@@ -85,7 +85,7 @@
             addingToPlaylist = true;
         }}>Add To Playlist</Item>
         {#if playlistID != 0}
-            <Item on:click={async () => {await deleteTrackFromPlaylist(playlistID,track.id)}}>Remove From Playlist</Item>
+            <Item on:click={async () => {await deleteTrackFromPlaylist(playlistID,track.id, track.platform)}}>Remove From Playlist</Item>
         {/if}
     {:else}
         <button on:click={() => addingToPlaylist = false} class="cursor-pointer" data-autoclose="false" ><img height="16px" width="16px" src="/arrow-left.svg" alt=""></button>

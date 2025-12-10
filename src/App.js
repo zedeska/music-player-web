@@ -387,11 +387,12 @@ export async function AddTrackToPlaylist(playlistID, trackIDs, token) {
   });
 }
 
-export async function DeleteTrackFromPlaylist(playlistID, trackID, token) {
+export async function DeleteTrackFromPlaylist(playlistID, trackID, platform, token) {
   return _post("delete-track-from-playlist", {
     playlist_id: playlistID,
     track_id: trackID,
     token,
+    platform
   });
 }
 

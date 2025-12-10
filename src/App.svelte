@@ -269,9 +269,9 @@
     }
   }
 
-  async function deleteTrackFromPlaylist(playlistID, trackID) {
+  async function deleteTrackFromPlaylist(playlistID, trackID, platform) {
     try {
-      await DeleteTrackFromPlaylist(playlistID, trackID, token);
+      await DeleteTrackFromPlaylist(playlistID, trackID, platform, token);
       window.location.reload();
       toast.success("Track removed from playlist successfully!");
     } catch (error) {
