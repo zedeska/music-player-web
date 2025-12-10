@@ -51,7 +51,7 @@
     </div>
     {#if queue}
         <button class="cursor-pointer" on:click={() => {deleteFromQueue(track)}}>
-            <img src="/xmark.svg" alt="">
+            <img src="/xmark.svg" alt="" class="min-w-[24px]" height="24px" width="24px">
         </button>
     {:else}
         <div class="flex gap-2">
