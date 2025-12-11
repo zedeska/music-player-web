@@ -62,7 +62,7 @@
         <button on:click={shuffle} ><img src="/shuffle.svg" alt=""></button>
         <button on:click={playPreviousTrack} ><img class="cursor-pointer" src="/backward-solid.svg" alt=""></button>
         <button disabled={isTrackLoading} on:click={playAndPause} class="text-white hover:text-gray-300 cursor-pointer">
-        <img class="min-w-[64px]" src={`/${paused ? 'play-solid' : 'pause-solid'}.svg`} alt="">
+        <img class="min-w-[64px]" src={isTrackLoading ? "/loading.gif" : paused ? '/play-solid.svg' : '/pause-solid.svg'} alt="">
         </button>
         <button on:click={playNextTrack}><img src="/forward-solid.svg" alt=""></button>
         <button on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
