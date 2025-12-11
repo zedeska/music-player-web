@@ -50,7 +50,7 @@
         <button class="hidden md:block cursor-pointer" on:click={shuffle} ><img src="/shuffle.svg" alt="Shuffle" /></button>
         <button class="cursor-pointer" on:click|stopPropagation={playPreviousTrack} ><img class="min-w-[18px]" src="/backward-solid.svg" alt="Previous" /></button>
         <button disabled={isTrackLoading} on:click|stopPropagation={playAndPause} class="text-white min-w-[18px] hover:text-gray-300 cursor-pointer">
-        <img src={paused ? '/play-solid.svg' : '/pause-solid.svg'} alt="">
+        <img src={isTrackLoading ? "/loading.gif" : paused ? '/play-solid.svg' : '/pause-solid.svg'} alt="">
         </button>
         <button class="cursor-pointer" on:click|stopPropagation={playNextTrack}><img class="cursor-pointer min-w-[18px]" src="/forward-solid.svg" alt="Next" /></button>
         <button class="hidden md:block" on:click={changeLoop}><img src={loop == 0 ? '/repeat.svg' : loop == 1 ? '/repeat-violet.svg' : '/repeat-once.svg'} alt="a" /></button>
