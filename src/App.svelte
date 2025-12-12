@@ -601,9 +601,9 @@
     }
   }
 
-  async function createPlaylist(name) {
+  async function createPlaylist(name, importSource="", importId="") {
     try {
-        const result = await CreatePlaylist(name, token);
+        const result = await CreatePlaylist(name, token, importSource, importId);
         return result;
     } catch (error) {
         toast.error("Error creating playlist");

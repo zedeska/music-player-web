@@ -367,8 +367,8 @@ export async function GetArtist(id, p) {
   return _get("artist", { id, p });
 }
 
-export async function CreatePlaylist(name, token) {
-  return _post("create-playlist", { name, token });
+export async function CreatePlaylist(name, token, imported="", id="") {
+  return _post("create-playlist", { name, token, imported, id });
 }
 
 export async function GetUsersPlaylists(token) {
