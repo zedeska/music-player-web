@@ -9,6 +9,8 @@
 
     let newPlaylistName = "";
     let makingPlaylist = false;
+    let importFromDeezer = false;
+    let importedDeezerId = "";
 
     getUsersPlaylists(true);
 
@@ -27,14 +29,18 @@
 <p class="text-2xl text-center" >Library</p>
 
 <div>
-    <button class="cursor-pointer text-sm flex" on:click|stopPropagation={() => makingPlaylist = !makingPlaylist} >
+    <button class="flex cursor-pointer" on:click={() => makingPlaylist = !makingPlaylist} >
         <img src="/plus.svg" alt=""> New playlist
     </button>
     {#if makingPlaylist}
-    <div>
-        <input class="max-w-full" type="text" on:click|stopPropagation on:input|stopPropagation bind:value={newPlaylistName} placeholder="Playlist name" />
-        <button on:click|stopPropagation={async () => {
-            await createPlaylist(newPlaylistName);
+    <div class="mb-3">
+        <input data-autoclose="false" type="text" bind:value={newPlaylistName} placeholder="Playlist name" /> <br>
+        <input class="cursor-pointer" name="importFromDeezer" type="checkbox" bind:checked={importFromDeezer} /> <label for="importFromDeezer"> import from deezer?</label> <br>
+        {#if importFromDeezer}
+            <label for="importedDeezerId">ID : </label><input name="importedDeezerId" bind:value={importedDeezerId} placeholder="14689133481" type="text">
+        {/if}
+        <button class="cursor-pointer" on:click={async () => {
+            await createPlaylist(newPlaylistName, importFromDeezer ? "deezer" : "", importFromDeezer ? importedDeezerId : "");
             usersPlaylists = await getUsersPlaylists();
             makingPlaylist = false;
         }}>Create Playlist</button>
